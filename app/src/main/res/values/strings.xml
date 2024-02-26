@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Object Detection Codelab</string>
+    <string name="tv_take_photo">Take photo</string>
+    <string name="tv_description">Select a preset image or take a new photo</string>
+    <string name="tv_placeholder">Object detection demo</string>
+
+    <string name="icon_emotion_content_description">Иконка улыбающегося лица</string>
+    <string name="welcome_title">Добро пожаловать</string>
+    <string name="welcome_text">Работайте со своими эмоциями, эмоциональным состоянием. Живите здоровую жизнь</string>
+    <string name="start">Начать</string>
+
+    <string name="your_data_title">Ваши данные</string>
+    <string name="your_data_text">Заполните данные о себе. Они могут понадобиться для определения эмоционального состояния</string>
+    <string name="name">Имя</string>
+    <string name="age">Возраст</string>
+    <string name="gender">Пол</string>
+    <string name="male_gender">Мужской</string>
+    <string name="female_gender">Женский</string>
+    <string name="icon_arrow_drop_down_content_description">Раскрыть выпадающий список</string>
+    <string name="icon_arrow_drop_up_content_description">Свернуть выпадающий список</string>
+    <string name="fill_in_the_field">Заполните поле</string>
+    <string name="confirm">Подтвердить</string>
+
+    <string name="home">Главная</string>
+    <string name="main_screen_subtitle">Как вы себя чувствуете?</string>
+    <string name="main_screen_title">Добро пожаловать, %1$s</string>
+</resources>

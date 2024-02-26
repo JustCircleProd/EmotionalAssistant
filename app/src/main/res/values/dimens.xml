@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="button_rounded_corners">10dp</dimen>
+    <dimen name="button_content_vertical_text_padding">8dp</dimen>
+    <dimen name="button_content_horizontal_text_padding">12dp</dimen>
+
+    <dimen name="welcome_screens_space">27dp</dimen>
+
+
+
+    <dimen name="start_screen_icon_size">200dp</dimen>
+
+    <dimen name="register_screen_icon_size">56dp</dimen>
+
+    <dimen name="main_screens_space">18dp</dimen>
+
+</resources>
