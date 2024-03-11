@@ -5,14 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
-import android.graphics.ImageFormat
-import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.YuvImage
 import android.media.ThumbnailUtils
 import android.os.Bundle
 import android.provider.MediaStore
@@ -28,10 +21,8 @@ import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import org.checkerframework.checker.units.qual.h
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -137,7 +128,8 @@ class MainActivity : AppCompatActivity() {
         for (pixel in pixels) {
             // After grayscale conversion, every channel shares the same color value
             // but I stay with the original conversion formula (in case grayscale conversion isn't there)
-            val grayscaleValue = 0.2989 * Color.red(pixel) + 0.5870 * Color.green(pixel) + 0.1140 * Color.blue(pixel)
+            val grayscaleValue =
+                0.2989 * Color.red(pixel) + 0.5870 * Color.green(pixel) + 0.1140 * Color.blue(pixel)
             // Normalize color range
 
             mImgData.putFloat(grayscaleValue.toFloat() / 255f)
@@ -148,12 +140,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun classifyImage(imageS: Bitmap) {
         try {
-            val image = Bitmap.createScaledBitmap(imageS, imageSize, imageSize, false);
+            val image = Bitmap.createScaledBitmap(imageS, imageSize, imageSize, false)
             val model = Model.newInstance(applicationContext)
 
             // Creates inputs for reference.
             val inputFeature0 =
-                TensorBuffer.createFixedSize(intArrayOf(1, imageSize, imageSize, 1), DataType.FLOAT32)
+                TensorBuffer.createFixedSize(
+                    intArrayOf(1, imageSize, imageSize, 1),
+                    DataType.FLOAT32
+                )
             val byteBuffer = image.toGrayscaleByteBuffer()
 
             inputFeature0.loadBuffer(byteBuffer)

@@ -2,13 +2,12 @@ package com.example.bd.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bd.data.repository.AppRepositoryImpl
-import com.example.bd.domain.model.EmotionalState
-import com.example.bd.domain.model.EmotionalStateTest
-import com.example.bd.domain.model.EmotionalStateTestQuestion
-import com.example.bd.domain.model.OptionList
-import com.example.bd.domain.model.PointList
-import com.example.bd.domain.repository.AppRepository
+import com.example.bd.core.domain.models.EmotionalState
+import com.example.bd.core.domain.models.EmotionalStateTest
+import com.example.bd.core.domain.models.EmotionalStateTestQuestion
+import com.example.bd.core.domain.models.OptionList
+import com.example.bd.core.domain.models.PointList
+import com.example.bd.core.domain.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

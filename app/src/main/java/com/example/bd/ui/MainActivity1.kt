@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,13 +34,21 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import com.example.bd.core.presentation.appNavigation.NavigationItem
+import com.example.bd.core.presentation.compontents.sharedViewModel
+import com.example.bd.core.presentation.navigationBar.NavigationBarItem
+import com.example.bd.emotionRecognition.presentation.EmotionRecognitionByPhotoScreen
+import com.example.bd.emotionRecognition.presentation.EmotionRecognitionMethodSelectionScreen
+import com.example.bd.emotionRecognition.presentation.EmotionRecognitionViewModel
+import com.example.bd.emotionRecognition.presentation.selectionFromList.EmotionSelectionFromListScreen
+import com.example.bd.home.presentation.HomeScreen
+import com.example.bd.registration.presentation.RegisterScreen
 import com.example.bd.ui.theme.BdTheme
+import com.example.bd.welcome.presentation.WelcomeScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -64,8 +71,8 @@ class MainActivity1 : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val bottomBarVisibilityState = rememberSaveable { (mutableStateOf(true)) }
 
-                bottomBarVisibilityState.value =  when (navBackStackEntry?.destination?.route) {
-                    NavigationItem.Welcome.route, NavigationItem.Register.route, NavigationItem.EmotionRecognition.route -> {
+                bottomBarVisibilityState.value = when (navBackStackEntry?.destination?.route) {
+                    NavigationItem.Welcome.route, NavigationItem.Register.route, NavigationItem.EmotionRecognitionMethodSelection.route -> {
                         false
                     }
 
@@ -78,47 +85,47 @@ class MainActivity1 : ComponentActivity() {
                     }
                 }
 
-                    Scaffold(
-                        bottomBar = {
-                            BottomNavigationBar(
-                                navController = navController,
-                                bottomBarVisibilityState = bottomBarVisibilityState
-                            )
-                        }
+                Scaffold(
+                    bottomBar = {
+                        BottomNavigationBar(
+                            navController = navController,
+                            bottomBarVisibilityState = bottomBarVisibilityState
+                        )
+                    }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(it)
-                        ) {
-                            val isUserTableNotEmpty by viewModel.isUserTableNotEmpty.collectAsStateWithLifecycle(
-                                initialValue = null
-                            )
-                            var startDestination by remember { mutableStateOf(NavigationItem.Welcome.route) }
+                        val isUserTableNotEmpty by viewModel.isUserTableNotEmpty.collectAsStateWithLifecycle(
+                            initialValue = null
+                        )
+                        var startDestination by remember { mutableStateOf(NavigationItem.Welcome.route) }
 
-                            LaunchedEffect(key1 = isUserTableNotEmpty) {
-                                if (isUserTableNotEmpty != null) {
-                                    startDestination = if (isUserTableNotEmpty!!) {
-                                        NavigationItem.Home.route
-                                    } else {
-                                        NavigationItem.Welcome.route
-                                    }
+                        LaunchedEffect(key1 = isUserTableNotEmpty) {
+                            if (isUserTableNotEmpty != null) {
+                                startDestination = if (isUserTableNotEmpty!!) {
+                                    NavigationItem.Home.route
+                                } else {
+                                    NavigationItem.Welcome.route
+                                }
 
-                                    launch {
-                                        delay(300)
-                                        isLoading = false
-                                    }
+                                launch {
+                                    delay(300)
+                                    isLoading = false
                                 }
                             }
+                        }
 
-                            if (isUserTableNotEmpty != null) {
-                                AppNavHost(
-                                    navController = navController,
-                                    startDestination = startDestination
-                                )
-                            }
+                        if (isUserTableNotEmpty != null) {
+                            AppNavHost(
+                                navController = navController,
+                                startDestination = startDestination
+                            )
                         }
                     }
+                }
             }
         }
     }
@@ -144,8 +151,18 @@ fun AppNavHost(
         animatedComposableForNavGraphBuilder(NavigationItem.Home.route) {
             HomeScreen(navController)
         }
-        animatedComposableForNavGraphBuilder(NavigationItem.EmotionRecognition.route) {
-            EmotionRecognitionScreen(navController)
+        animatedComposableForNavGraphBuilder(NavigationItem.EmotionRecognitionMethodSelection.route) {
+            EmotionRecognitionMethodSelectionScreen(navController)
+        }
+        animatedComposableForNavGraphBuilder(NavigationItem.EmotionRecognitionByPhoto.route) {
+            val viewModel = it.sharedViewModel<EmotionRecognitionViewModel>(
+                navController = navController,
+                viewModelOwnerRoute = NavigationItem.EmotionRecognitionMethodSelection.route
+            )
+            EmotionRecognitionByPhotoScreen(navController, viewModel)
+        }
+        animatedComposableForNavGraphBuilder(NavigationItem.EmotionSelectionFromList.route) {
+            EmotionSelectionFromListScreen(navController)
         }
     }
 }

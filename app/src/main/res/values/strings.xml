@@ -4,10 +4,12 @@
     <string name="tv_description">Select a preset image or take a new photo</string>
     <string name="tv_placeholder">Object detection demo</string>
 
+
     <string name="icon_emotion_content_description">Иконка улыбающегося лица</string>
     <string name="welcome_title">Добро пожаловать</string>
     <string name="welcome_text">Работайте со своими эмоциями, эмоциональным состоянием. Живите здоровую жизнь</string>
     <string name="start">Начать</string>
+
 
     <string name="your_data_title">Ваши данные</string>
     <string name="your_data_text">Заполните данные о себе. Они могут понадобиться для определения эмоционального состояния</string>
@@ -21,7 +23,33 @@
     <string name="fill_in_the_field">Заполните поле</string>
     <string name="confirm">Подтвердить</string>
 
+
     <string name="home">Главная</string>
     <string name="main_screen_subtitle">Как вы себя чувствуете?</string>
     <string name="main_screen_title">Добро пожаловать, %1$s</string>
+
+    <string name="todays_emotion">Сегодняшняя эмоция</string>
+    <string name="recognize_your_emotion">Определите эмоцию</string>
+    <string name="recognize">Определить</string>
+
+
+    <string name="choose_a_method">Выберите метод</string>
+    <string name="take_a_picture">Сделать снимок</string>
+    <string name="pick_from_the_gallery">Выбрать из галереи</string>
+    <string name="select_from_the_list">Выбрать из списка</string>
+
+
+    <string name="face_detection">Обнаружение лица</string>
+    <string name="emotion_recognition">Распознавание эмоции</string>
+
+
+    <string name="select_your_emotion">Выберите вашу эмоцию</string>
+    <string name="anger">Злость</string>
+    <string name="disgust">Отвращение</string>
+    <string name="fear">Страх</string>
+    <string name="happiness">Счастье</string>
+    <string name="neutral">Нейтральная</string>
+    <string name="sad">Грусть</string>
+    <string name="surprise">Удивление</string>
+
 </resources>
