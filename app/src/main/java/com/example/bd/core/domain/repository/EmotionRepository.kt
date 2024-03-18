@@ -1,6 +1,6 @@
 package com.example.bd.core.domain.repository
 
-import com.example.bd.emotionRecognition.domain.models.Emotion
+import com.example.bd.core.domain.models.Emotion
 import kotlinx.coroutines.flow.Flow
 
 interface EmotionRepository {

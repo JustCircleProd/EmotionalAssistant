@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import com.example.bd.ui.theme.AlegreyaFontFamily
-import com.example.bd.ui.theme.UnfocusedTextFieldColor
-import com.example.bd.ui.theme.White
+import com.example.bd.core.presentation.theme.AlegreyaFontFamily
+import com.example.bd.core.presentation.theme.UnfocusedTextFieldColor
+import com.example.bd.core.presentation.theme.White
 
 @Composable
 fun MyTextField(

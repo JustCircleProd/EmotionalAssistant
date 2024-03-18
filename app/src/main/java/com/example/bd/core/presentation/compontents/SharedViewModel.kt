@@ -13,10 +13,11 @@ inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(
     navController: NavController,
     viewModelOwnerRoute: String
 ): T {
-    navController.previousBackStackEntry?.destination?.route ?: return hiltViewModel()
-    navController.getBackStackEntry(viewModelOwnerRoute)
+    navController.previousBackStackEntry?.destination?.route ?: return hiltViewModel<T>()
+
     val parentEntry = remember(this) {
         navController.getBackStackEntry(viewModelOwnerRoute)
     }
+
     return viewModel(parentEntry)
 }

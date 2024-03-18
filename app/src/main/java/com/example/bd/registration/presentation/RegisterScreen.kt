@@ -19,7 +19,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,17 +36,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.bd.core.domain.models.User
-import com.example.bd.core.presentation.appNavigation.NavigationItem
-import com.example.bd.core.presentation.compontents.MyButton
+import com.example.bd.core.presentation.compontents.appNavigation.NavigationItem
+import com.example.bd.core.presentation.compontents.buttons.MyButton
+import com.example.bd.core.presentation.theme.AlegreyaFontFamily
+import com.example.bd.core.presentation.theme.BdTheme
+import com.example.bd.core.presentation.theme.SubtitleTextColor
+import com.example.bd.core.presentation.theme.White
 import com.example.bd.registration.domain.validation.UserValidation
 import com.example.bd.registration.presentation.components.MyExposedDropDownMenu
 import com.example.bd.registration.presentation.components.MyTextField
-import com.example.bd.ui.theme.AlegreyaFontFamily
-import com.example.bd.ui.theme.BdTheme
-import com.example.bd.ui.theme.SubtitleTextColor
-import com.example.bd.ui.theme.White
 import com.example.db.R
-import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(
@@ -114,7 +112,6 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-
             val ageState = remember { mutableStateOf("") }
             val isFirstInteractionWithAgeTextField = remember { mutableStateOf(true) }
 
@@ -150,9 +147,6 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-
-            val coroutineScope = rememberCoroutineScope()
-
             MyButton(
                 text = stringResource(id = R.string.confirm),
                 modifier = Modifier.fillMaxWidth(),
@@ -161,16 +155,16 @@ fun RegisterScreen(
                             ageState.value
                         ) && UserValidation.isGenderValid(genders, genderState.value)
                     ) {
-                        coroutineScope.launch {
-                            viewModel.registerUser(
+                        viewModel.onEvent(
+                            RegisterEvent.OnConfirmPressed(
                                 User(
                                     name = nameState.value,
                                     age = ageState.value.toInt(),
                                     gender = genderState.value
                                 )
                             )
-                            navController.navigate(NavigationItem.Home.route)
-                        }
+                        )
+                        navController.navigate(NavigationItem.Home.route)
                     } else {
                         isFirstInteractionWithNameTextField.value = false
                         isFirstInteractionWithAgeTextField.value = false

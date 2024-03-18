@@ -1,9 +1,8 @@
 <resources>
-    <string name="app_name">Object Detection Codelab</string>
-    <string name="tv_take_photo">Take photo</string>
-    <string name="tv_description">Select a preset image or take a new photo</string>
-    <string name="tv_placeholder">Object detection demo</string>
+    <string name="app_name">Эмоциональный помощник</string>
 
+    <string name="back">Назад</string>
+    <string name="confirm">Подтвердить</string>
 
     <string name="icon_emotion_content_description">Иконка улыбающегося лица</string>
     <string name="welcome_title">Добро пожаловать</string>
@@ -21,17 +20,17 @@
     <string name="icon_arrow_drop_down_content_description">Раскрыть выпадающий список</string>
     <string name="icon_arrow_drop_up_content_description">Свернуть выпадающий список</string>
     <string name="fill_in_the_field">Заполните поле</string>
-    <string name="confirm">Подтвердить</string>
 
 
     <string name="home">Главная</string>
+    <string name="history">История</string>
+
     <string name="main_screen_subtitle">Как вы себя чувствуете?</string>
     <string name="main_screen_title">Добро пожаловать, %1$s</string>
 
     <string name="todays_emotion">Сегодняшняя эмоция</string>
     <string name="recognize_your_emotion">Определите эмоцию</string>
     <string name="recognize">Определить</string>
-
 
     <string name="choose_a_method">Выберите метод</string>
     <string name="take_a_picture">Сделать снимок</string>
@@ -47,9 +46,25 @@
     <string name="anger">Злость</string>
     <string name="disgust">Отвращение</string>
     <string name="fear">Страх</string>
-    <string name="happiness">Счастье</string>
-    <string name="neutral">Нейтральная</string>
+    <string name="happiness">Радость</string>
+    <string name="neutral">Нейтральность</string>
     <string name="sad">Грусть</string>
     <string name="surprise">Удивление</string>
 
+    <string name="history_of_your_states">История ваших состояний</string>
+
+    <string name="january">Январь</string>
+    <string name="february">Февраль</string>
+    <string name="march">Март</string>
+    <string name="april">Апрель</string>
+    <string name="may">Май</string>
+    <string name="june">Июнь</string>
+    <string name="july">Июль</string>
+    <string name="august">Август</string>
+    <string name="september">Сентябрь</string>
+    <string name="october">Октябрь</string>
+    <string name="november">Ноябрь</string>
+    <string name="december">Декабрь</string>
+
+    <string name="no_emotions">Нет эмоций</string>
 </resources>

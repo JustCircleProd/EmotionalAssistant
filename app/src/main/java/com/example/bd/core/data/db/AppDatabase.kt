@@ -7,18 +7,19 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.bd.core.data.db.dao.EmotionDao
 import com.example.bd.core.data.db.dao.EmotionResultDao
+import com.example.bd.core.data.db.dao.EmotionResultWithEmotionDao
 import com.example.bd.core.data.db.dao.EmotionalStateDao
 import com.example.bd.core.data.db.dao.EmotionalStateTestDao
 import com.example.bd.core.data.db.dao.UserDao
+import com.example.bd.core.domain.models.Emotion
+import com.example.bd.core.domain.models.EmotionResult
 import com.example.bd.core.domain.models.EmotionalState
 import com.example.bd.core.domain.models.EmotionalStateTest
 import com.example.bd.core.domain.models.EmotionalStateTestQuestion
 import com.example.bd.core.domain.models.User
-import com.example.bd.emotionRecognition.domain.models.Emotion
-import com.example.bd.emotionRecognition.domain.models.EmotionResult
 
 @Database(
-    version = 15,
+    version = 19,
     entities = [
         User::class,
         EmotionalState::class, EmotionalStateTest::class, EmotionalStateTestQuestion::class,
@@ -33,6 +34,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun emotionResultDao(): EmotionResultDao
     abstract fun emotionalStateDao(): EmotionalStateDao
     abstract fun emotionalStateTestDao(): EmotionalStateTestDao
+    abstract fun emotionResultWithEmotionDao(): EmotionResultWithEmotionDao
 
     companion object {
         fun getInstance(context: Context): AppDatabase {

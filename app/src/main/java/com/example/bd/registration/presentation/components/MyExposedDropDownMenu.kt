@@ -1,10 +1,14 @@
 package com.example.bd.registration.presentation.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.rounded.ArrowDropUp
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -16,13 +20,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.bd.ui.theme.AlegreyaFontFamily
-import com.example.bd.ui.theme.UnfocusedTextFieldColor
-import com.example.bd.ui.theme.White
+import com.example.bd.core.presentation.theme.AlegreyaFontFamily
+import com.example.bd.core.presentation.theme.UnfocusedTextFieldColor
+import com.example.bd.core.presentation.theme.White
 import com.example.db.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,14 +71,19 @@ fun MyExposedDropDownMenu(
             },
             trailingIcon = {
                 if (expanded) {
-                    Image(
-                        painter = painterResource(id = R.drawable.icon_arrow_drop_up),
-                        contentDescription = stringResource(id = R.string.icon_arrow_drop_up_content_description)
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowDropUp,
+                        contentDescription = stringResource(id = R.string.icon_arrow_drop_up_content_description),
+                        tint = White,
+                        modifier = Modifier.size(24.dp)
+
                     )
                 } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.icon_arrow_drop_down),
-                        contentDescription = stringResource(id = R.string.icon_arrow_drop_down_content_description)
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowDropDown,
+                        contentDescription = stringResource(id = R.string.icon_arrow_drop_down_content_description),
+                        tint = White,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             },

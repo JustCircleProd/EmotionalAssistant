@@ -5,13 +5,15 @@ import com.example.bd.core.data.db.AppDatabase
 import com.example.bd.core.data.repository.AppRepositoryImpl
 import com.example.bd.core.data.repository.EmotionRepositoryImpl
 import com.example.bd.core.data.repository.EmotionResultRepositoryImpl
+import com.example.bd.core.data.repository.EmotionResultWithEmotionRepositoryImpl
+import com.example.bd.core.data.repository.InternalStorageRepositoryImpl
 import com.example.bd.core.data.repository.UserRepositoryImpl
 import com.example.bd.core.domain.repository.AppRepository
 import com.example.bd.core.domain.repository.EmotionRepository
 import com.example.bd.core.domain.repository.EmotionResultRepository
+import com.example.bd.core.domain.repository.EmotionResultWithEmotionRepository
+import com.example.bd.core.domain.repository.InternalStorageRepository
 import com.example.bd.core.domain.repository.UserRepository
-import com.example.bd.emotionRecognition.data.repository.InternalStorageRepositoryImpl
-import com.example.bd.emotionRecognition.domain.repository.InternalStorageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,4 +54,9 @@ object AppModule {
     @Provides
     fun provideInternalStorageRepository(@ApplicationContext context: Context): InternalStorageRepository =
         InternalStorageRepositoryImpl(context)
+
+    @Singleton
+    @Provides
+    fun provideEmotionResultWithEmotionRepository(appDatabase: AppDatabase): EmotionResultWithEmotionRepository =
+        EmotionResultWithEmotionRepositoryImpl(appDatabase)
 }

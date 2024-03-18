@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,12 +34,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.example.bd.core.presentation.compontents.BackButton
-import com.example.bd.core.presentation.compontents.MyButton
-import com.example.bd.emotionRecognition.domain.models.Emotion
-import com.example.bd.ui.theme.AlegreyaFontFamily
-import com.example.bd.ui.theme.TonalButtonColor
-import com.example.bd.ui.theme.White
+import com.example.bd.core.domain.models.Emotion
+import com.example.bd.core.presentation.compontents.buttons.BackButton
+import com.example.bd.core.presentation.compontents.buttons.MyButton
+import com.example.bd.core.presentation.theme.AlegreyaFontFamily
+import com.example.bd.core.presentation.theme.TonalButtonColor
+import com.example.bd.core.presentation.theme.White
+import com.example.bd.core.utils.getEmotionNameString
 import com.example.db.R
 
 @Composable
@@ -51,8 +53,8 @@ fun EmotionSelectionFromListScreen(
             BackButton(
                 onClick = { navController.popBackStack() },
                 modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.back_button_padding),
-                    start = dimensionResource(id = R.dimen.back_button_padding)
+                    top = dimensionResource(id = R.dimen.back_button_layout_padding),
+                    start = dimensionResource(id = R.dimen.back_button_layout_padding)
                 )
             )
 
@@ -79,37 +81,7 @@ fun EmotionSelectionFromListScreen(
                 val emotionListItems = mutableMapOf<Emotion, String>()
 
                 emotions.value.forEach {
-                    val value = when (it.name) {
-                        Emotion.EmotionName.ANGER -> {
-                            stringResource(R.string.anger)
-                        }
-
-                        Emotion.EmotionName.DISGUST -> {
-                            stringResource(R.string.disgust)
-                        }
-
-                        Emotion.EmotionName.FEAR -> {
-                            stringResource(R.string.fear)
-                        }
-
-                        Emotion.EmotionName.HAPPINESS -> {
-                            stringResource(R.string.happiness)
-                        }
-
-                        Emotion.EmotionName.NEUTRAL -> {
-                            stringResource(R.string.neutral)
-                        }
-
-                        Emotion.EmotionName.SAD -> {
-                            stringResource(R.string.sad)
-                        }
-
-                        Emotion.EmotionName.SURPRISE -> {
-                            stringResource(R.string.surprise)
-                        }
-                    }
-
-                    emotionListItems[it] = value
+                    emotionListItems[it] = getEmotionNameString(LocalContext.current, it.name)
                 }
 
                 val emotion by viewModel.emotion.collectAsStateWithLifecycle()
@@ -155,14 +127,14 @@ private fun EmotionListItem(
     onClick: (Emotion) -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corners)),
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corners_size)),
         colors = CardDefaults.cardColors().copy(containerColor = TonalButtonColor),
         modifier = Modifier
             .fillMaxWidth()
             .border(
                 width = if (selected(item.key)) 2.dp else 0.dp,
                 color = if (selected(item.key)) MaterialTheme.colorScheme.primary else Color.Transparent,
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corners))
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corners_size))
             )
             .clickable { onClick(item.key) }
     ) {

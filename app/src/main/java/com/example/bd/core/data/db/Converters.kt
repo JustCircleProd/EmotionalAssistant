@@ -4,7 +4,7 @@ import androidx.room.TypeConverter
 import com.example.bd.core.domain.models.OptionList
 import com.example.bd.core.domain.models.PointList
 import com.google.gson.Gson
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class Converters {
     @TypeConverter
@@ -28,12 +28,12 @@ class Converters {
     }
 
     @TypeConverter
-    fun localDateToString(localDate: LocalDate): String {
-        return localDate.toString()
+    fun localDateTimeToString(localDateTime: LocalDateTime): String {
+        return localDateTime.toString()
     }
 
     @TypeConverter
-    fun localDateFromString(localDateStr: String): LocalDate {
-        return LocalDate.parse(localDateStr)
+    fun localDateTimeFromString(localDateTimeStr: String): LocalDateTime {
+        return LocalDateTime.parse(localDateTimeStr)
     }
 }
