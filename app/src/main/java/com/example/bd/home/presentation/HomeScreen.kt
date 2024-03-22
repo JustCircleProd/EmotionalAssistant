@@ -64,13 +64,26 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
             Spacer(modifier = Modifier.height(20.dp))
 
             HomeActionCard(
-                title = stringResource(R.string.todays_emotion),
+                title = stringResource(R.string.your_emotion),
                 subtitle = stringResource(R.string.recognize_your_emotion),
                 buttonText = stringResource(R.string.recognize),
                 onButtonClick = {
                     navController.navigate(NavigationItem.EmotionRecognitionMethodSelection.route)
                 },
-                cardImageResId = R.drawable.action_card_demo_image,
+                cardImageResId = R.drawable.action_card_emotion,
+                cardImageContentDescription = null
+            )
+
+            Spacer(Modifier.height(20.dp))
+
+            HomeActionCard(
+                title = "Эмоциональное состояние",
+                subtitle = "Пройдите тест",
+                buttonText = "Пройти",
+                onButtonClick = {
+                    navController.navigate(NavigationItem.EmotionalStateTest.route)
+                },
+                cardImageResId = R.drawable.action_card_emotional_state,
                 cardImageContentDescription = null
             )
         }

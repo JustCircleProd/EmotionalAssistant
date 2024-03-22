@@ -115,7 +115,7 @@ fun EmotionRecognitionByPhotoScreen(
                     }
 
                     EmotionRecognitionStage.EMOTION_CLASSIFIED -> {
-                        getEmotionNameString(LocalContext.current, recognizedEmotion!!.name)
+                        getEmotionNameString(LocalContext.current, recognizedEmotion)
                     }
                 }
 
@@ -129,7 +129,7 @@ fun EmotionRecognitionByPhotoScreen(
                     Text(
                         text = it,
                         fontFamily = AlegreyaFontFamily,
-                        fontSize = 27.sp,
+                        fontSize = 26.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }

@@ -1,28 +1,22 @@
 package com.example.bd.core.domain.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PrimaryKey
+import org.mongodb.kbson.ObjectId
+import java.time.LocalDate
 
-@Entity(
-    tableName = "emotional_state_test_result",
-    foreignKeys = [
-        ForeignKey(
-            entity = User::class,
-            parentColumns = ["id"],
-            childColumns = ["user_id"]
-        ),
-        ForeignKey(
-            entity = EmotionalStateTest::class,
-            parentColumns = ["id"],
-            childColumns = ["emotional_state_test_id"]
-        )
-    ]
-)
-data class EmotionalStateTestResult(
-    @PrimaryKey(autoGenerate = true) val id: Int,
-    @ColumnInfo(name = "score") val score: Int,
-    @ColumnInfo(name = "user_id", index = true) val userId: Int,
-    @ColumnInfo(name = "emotional_state_test_id", index = true) val emotionalStateTestId: Int
-)
+class EmotionalStateTestResult : RealmObject {
+    @PrimaryKey
+    var _id: ObjectId = ObjectId()
+    var emotionalStateTest: EmotionalStateTest? = null
+    var score: Int = 0
+
+    var date: LocalDate
+        get() {
+            return LocalDate.parse(dateDescription)
+        }
+        set(value) {
+            dateDescription = value.toString()
+        }
+    private var dateDescription: String = LocalDate.now().toString()
+}

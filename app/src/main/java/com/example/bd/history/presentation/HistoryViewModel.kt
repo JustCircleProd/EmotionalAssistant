@@ -1,11 +1,9 @@
 package com.example.bd.history.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bd.core.domain.models.EmotionResult
-import com.example.bd.core.domain.repository.EmotionResultRepository
-import com.example.bd.core.domain.repository.EmotionResultWithEmotionRepository
+import com.example.bd.core.domain.models.Emotion
+import com.example.bd.core.domain.repository.EmotionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -14,31 +12,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    emotionResultWithEmotionRepository: EmotionResultWithEmotionRepository,
-    private val emotionResultRepository: EmotionResultRepository,
+    private val emotionRepository: EmotionRepository
 ) : ViewModel() {
 
-    val emotionResultsWithEmotion =
-        emotionResultWithEmotionRepository.getEmotionResultsWithEmotion()
+    val emotions = emotionRepository.getAll()
 
     val selectedDate = MutableStateFlow<LocalDate?>(null)
 
-    init {
+    fun deleteEmotionResult(emotion: Emotion) {
         viewModelScope.launch {
-            emotionResultsWithEmotion.collect {
-                Log.d("Tag111", it.toString())
-            }
-
-            emotionResultRepository.getAll().collect {
-                Log.d("Tag111", it.toString())
-            }
-        }
-    }
-
-    fun deleteEmotionResult(emotionResult: EmotionResult) {
-        viewModelScope.launch {
-            Log.d("Tag111", "deleteEmotionResult")
-            emotionResultRepository.delete(emotionResult)
+            emotionRepository.delete(emotion)
         }
     }
 }

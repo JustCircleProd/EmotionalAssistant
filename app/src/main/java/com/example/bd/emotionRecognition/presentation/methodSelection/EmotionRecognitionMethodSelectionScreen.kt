@@ -84,7 +84,7 @@ fun EmotionRecognitionMethodSelectionScreen(
                     text = stringResource(R.string.choose_a_method),
                     fontWeight = FontWeight.Bold,
                     fontFamily = AlegreyaFontFamily,
-                    fontSize = 27.sp,
+                    fontSize = 26.sp,
                     color = White,
                 )
 

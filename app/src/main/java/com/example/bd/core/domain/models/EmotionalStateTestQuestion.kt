@@ -1,32 +1,11 @@
 package com.example.bd.core.domain.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.types.EmbeddedRealmObject
+import io.realm.kotlin.types.RealmList
 
-@Entity(
-    tableName = "emotional_state_test_question",
-    foreignKeys = [
-        ForeignKey(
-            entity = EmotionalStateTest::class,
-            parentColumns = ["id"],
-            childColumns = ["emotional_state_test_id"]
-        )
-    ]
-)
-data class EmotionalStateTestQuestion(
-    @PrimaryKey val id: Int,
-    @ColumnInfo(name = "question") val question: String,
-    @ColumnInfo(name = "options") val optionList: OptionList,
-    @ColumnInfo("points") val pointList: PointList,
-    @ColumnInfo("emotional_state_test_id", index = true) val emotionalStateTestId: Int
-)
-
-data class OptionList(
-    val options: List<String>
-)
-
-data class PointList(
-    val points: List<Int>
-)
+class EmotionalStateTestQuestion : EmbeddedRealmObject {
+    var question: String = ""
+    var options: RealmList<String> = realmListOf()
+    var points: Int = 0
+}

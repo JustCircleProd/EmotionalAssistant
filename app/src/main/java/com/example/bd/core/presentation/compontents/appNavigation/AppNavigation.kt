@@ -7,7 +7,8 @@ enum class Screen {
     HISTORY,
     EMOTION_RECOGNITION_METHOD_SELECTION,
     EMOTION_RECOGNITION_BY_PHOTO,
-    EMOTION_SELECTION_FROM_LIST
+    EMOTION_SELECTION_FROM_LIST,
+    EMOTIONAL_STATE_TEST
 }
 
 sealed class NavigationItem(val route: String) {
@@ -20,4 +21,5 @@ sealed class NavigationItem(val route: String) {
 
     data object EmotionRecognitionByPhoto : NavigationItem(Screen.EMOTION_RECOGNITION_BY_PHOTO.name)
     data object EmotionSelectionFromList : NavigationItem(Screen.EMOTION_SELECTION_FROM_LIST.name)
+    data object EmotionalStateTest : NavigationItem(Screen.EMOTIONAL_STATE_TEST.name)
 }

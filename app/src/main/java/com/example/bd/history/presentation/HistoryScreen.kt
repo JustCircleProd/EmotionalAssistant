@@ -1,6 +1,5 @@
 package com.example.bd.history.presentation
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -63,10 +62,8 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
     Surface {
         val scaffoldState = rememberBottomSheetScaffoldState()
 
-        val emotionResultsWithEmotion =
-            viewModel.emotionResultsWithEmotion.collectAsStateWithLifecycle(
-                initialValue = listOf()
-            )
+        val emotions =
+            viewModel.emotions.collectAsStateWithLifecycle(initialValue = listOf())
 
         val selectedDate = viewModel.selectedDate.collectAsStateWithLifecycle()
 
@@ -78,11 +75,11 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
             }
         }
 
-        val emotionResultsWithEmotionForSelectedDate = remember(selectedDate) {
+        val emotionForSelectedDate = remember(selectedDate) {
             derivedStateOf {
                 if (selectedDate.value != null) {
-                    emotionResultsWithEmotion.value.filter {
-                        it.emotionResult.dateTime.toLocalDate() == selectedDate.value
+                    emotions.value.filter {
+                        it.dateTime.toLocalDate() == selectedDate.value
                     }
                 } else {
                     listOf()
@@ -137,7 +134,7 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                                 Spacer(Modifier.height(8.dp))
                             }
 
-                            if (emotionResultsWithEmotionForSelectedDate.value.isEmpty()) {
+                            if (emotionForSelectedDate.value.isEmpty()) {
                                 item(span = { GridItemSpan(maxLineSpan) }) {
                                     Text(
                                         text = stringResource(id = R.string.no_emotions),
@@ -150,22 +147,17 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                                 return@LazyVerticalGrid
                             }
 
-                            items(emotionResultsWithEmotionForSelectedDate.value.size) {
-                                val emotionResultWithEmotion =
-                                    emotionResultsWithEmotionForSelectedDate.value[it]
+                            items(emotionForSelectedDate.value.size) {
+                                val emotion = emotionForSelectedDate.value[it]
 
                                 EmotionResultCard(
-                                    emotionResultWithEmotion,
+                                    emotion,
                                     modifier = Modifier.weight(1f),
                                     onClick = {
 
                                     },
                                     onDeleteButtonClick = {
-                                        Log.d(
-                                            "Tag111",
-                                            emotionResultWithEmotion.emotionResult.toString()
-                                        )
-                                        viewModel.deleteEmotionResult(emotionResultWithEmotion.emotionResult)
+                                        viewModel.deleteEmotionResult(emotion)
                                     }
                                 )
                             }
@@ -200,7 +192,7 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                     onDateSelected = {
                         viewModel.selectedDate.value = it
                     },
-                    emotionResultsWithEmotion = emotionResultsWithEmotion
+                    emotions = emotions
                 )
             }
         }

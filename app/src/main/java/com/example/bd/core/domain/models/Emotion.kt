@@ -1,21 +1,32 @@
 package com.example.bd.core.domain.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PrimaryKey
+import org.mongodb.kbson.ObjectId
+import java.time.LocalDateTime
 
-@Entity(tableName = "emotion")
-data class Emotion(
-    @PrimaryKey val id: Int,
-    @ColumnInfo(name = "name") val name: EmotionName
-) {
-    enum class EmotionName {
-        ANGER,
-        DISGUST,
-        FEAR,
-        HAPPINESS,
-        NEUTRAL,
-        SAD,
-        SURPRISE
-    }
+class Emotion : RealmObject {
+    @PrimaryKey
+    var _id: ObjectId = ObjectId()
+
+    var name: EmotionName
+        get() {
+            return EmotionName.valueOf(nameDescription)
+        }
+        set(value) {
+            nameDescription = value.name
+        }
+    private var nameDescription: String = EmotionName.NEUTRAL.name
+
+    var dateTime: LocalDateTime
+        get() {
+            return LocalDateTime.parse(dateDescription)
+        }
+        set(value) {
+            dateDescription = value.toString()
+        }
+    private var dateDescription: String = LocalDateTime.now().toString()
+
+    var note: String? = null
+    var imageFileName: String? = null
 }

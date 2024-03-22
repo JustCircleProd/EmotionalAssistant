@@ -1,18 +1,27 @@
 package com.example.bd.core.utils
 
 import android.content.Context
-import com.example.bd.core.domain.models.Emotion
+import com.example.bd.core.domain.models.EmotionName
+import com.example.bd.core.domain.models.Gender
 import com.example.db.R
 
-fun getEmotionNameString(context: Context, emotionName: Emotion.EmotionName): String {
+fun getGenderString(context: Context, gender: Gender): String {
+    return when (gender) {
+        Gender.MALE -> context.getString(R.string.male_gender)
+        Gender.FEMALE -> context.getString(R.string.female_gender)
+    }
+}
+
+fun getEmotionNameString(context: Context, emotionName: EmotionName?): String {
     return when (emotionName) {
-        Emotion.EmotionName.ANGER -> context.getString(R.string.anger)
-        Emotion.EmotionName.DISGUST -> context.getString(R.string.disgust)
-        Emotion.EmotionName.FEAR -> context.getString(R.string.fear)
-        Emotion.EmotionName.HAPPINESS -> context.getString(R.string.happiness)
-        Emotion.EmotionName.NEUTRAL -> context.getString(R.string.neutral)
-        Emotion.EmotionName.SAD -> context.getString(R.string.sad)
-        Emotion.EmotionName.SURPRISE -> context.getString(R.string.surprise)
+        EmotionName.ANGER -> context.getString(R.string.anger)
+        EmotionName.DISGUST -> context.getString(R.string.disgust)
+        EmotionName.FEAR -> context.getString(R.string.fear)
+        EmotionName.HAPPINESS -> context.getString(R.string.happiness)
+        EmotionName.NEUTRAL -> context.getString(R.string.neutral)
+        EmotionName.SAD -> context.getString(R.string.sad)
+        EmotionName.SURPRISE -> context.getString(R.string.surprise)
+        else -> context.getString(R.string.neutral)
     }
 }
 

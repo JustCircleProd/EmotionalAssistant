@@ -1,13 +1,24 @@
 package com.example.bd.core.domain.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.types.RealmList
+import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PrimaryKey
+import org.mongodb.kbson.ObjectId
 
-@Entity(tableName = "user")
-data class User(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "age") val age: Int,
-    @ColumnInfo(name = "gender") val gender: String
-)
+class User : RealmObject {
+    @PrimaryKey
+    var _id: ObjectId = ObjectId()
+    var name: String = ""
+    var age: Int = 0
+    var gender: Gender
+        get() {
+            return Gender.valueOf(genderDescription)
+        }
+        set(value) {
+            genderDescription = value.name
+        }
+    private var genderDescription: String = Gender.MALE.name
+    var emotions: RealmList<Emotion> = realmListOf()
+    var emotionalStateTestResults: RealmList<EmotionalStateTestResult> = realmListOf()
+}

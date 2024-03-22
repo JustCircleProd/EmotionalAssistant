@@ -7,9 +7,7 @@ interface UserRepository {
 
     suspend fun insertUser(user: User)
 
-    suspend fun getUser(): User
-
-    fun getUserFlow(): Flow<User>
+    fun getUser(): Flow<User?>
 
     fun isUserTableNotEmpty(): Flow<Boolean>
 }

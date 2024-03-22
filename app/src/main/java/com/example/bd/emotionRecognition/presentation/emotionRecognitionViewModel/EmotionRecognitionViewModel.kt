@@ -3,15 +3,12 @@ package com.example.bd.emotionRecognition.presentation.emotionRecognitionViewMod
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bd.core.domain.models.Emotion
-import com.example.bd.core.domain.models.EmotionResult
+import com.example.bd.core.domain.models.EmotionName
 import com.example.bd.core.domain.repository.EmotionRepository
-import com.example.bd.core.domain.repository.EmotionResultRepository
 import com.example.bd.core.domain.repository.InternalStorageRepository
-import com.example.bd.core.domain.repository.UserRepository
 import com.example.bd.emotionRecognition.utils.rotateImageIfNeeded
 import com.example.bd.emotionRecognition.utils.toGrayscaleByteBuffer
 import com.example.db.ml.Model
@@ -43,9 +40,7 @@ enum class EmotionRecognitionStage {
 
 @HiltViewModel
 class EmotionRecognitionViewModel @Inject constructor(
-    private val userRepository: UserRepository,
     private val emotionRepository: EmotionRepository,
-    private val emotionResultRepository: EmotionResultRepository,
     private val internalStorageRepository: InternalStorageRepository,
     private val emotionRecognitionModel: Model
 ) : ViewModel() {
@@ -59,7 +54,7 @@ class EmotionRecognitionViewModel @Inject constructor(
         FaceDetection.getClient(options)
     }
 
-    val emotion = MutableStateFlow<Emotion?>(null)
+    val emotion = MutableStateFlow<EmotionName?>(null)
     val imageBitmap = MutableStateFlow<Bitmap?>(null)
 
     val recognitionStage = MutableStateFlow(EmotionRecognitionStage.FACE_DETECTION)
@@ -175,7 +170,7 @@ class EmotionRecognitionViewModel @Inject constructor(
                 }
             }
 
-            emotion.value = emotionRepository.getById(maxIndex + 1)
+            emotion.value = EmotionName.entries[maxIndex]
             recognitionStage.value = EmotionRecognitionStage.EMOTION_CLASSIFIED
         } catch (e: IOException) {
             // TODO Handle the exception
@@ -184,17 +179,12 @@ class EmotionRecognitionViewModel @Inject constructor(
 
     private fun saveEmotionResult() {
         viewModelScope.launch {
-            val test = EmotionResult(
-                dateTime = LocalDateTime.now(),
-                userId = userRepository.getUser().id,
-                emotionId = emotion.value!!.id,
-                imageFileName = imageFileName
-            )
-
-            Log.d("Tag111", test.toString())
-
-            emotionResultRepository.insert(
-                test
+            emotionRepository.insert(
+                Emotion().apply {
+                    dateTime = LocalDateTime.now()
+                    imageFileName = this@EmotionRecognitionViewModel.imageFileName
+                    name = emotion.value!!
+                }
             )
         }
     }

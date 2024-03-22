@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.bd.core.domain.models.EmotionResultWithEmotion
+import com.example.bd.core.domain.models.Emotion
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.utils.getMonthName
 import com.example.db.R
@@ -68,7 +68,7 @@ import java.util.Locale
 fun MyCalendar(
     selectedDate: State<LocalDate?>,
     onDateSelected: (LocalDate) -> Unit,
-    emotionResultsWithEmotion: State<List<EmotionResultWithEmotion>>,
+    emotions: State<List<Emotion>>,
     modifier: Modifier = Modifier
 ) {
     val currentMonth = remember { YearMonth.now() }
@@ -115,9 +115,9 @@ fun MyCalendar(
                     onClick = {
                         onDateSelected(it.date)
                     },
-                    emotionImageFileName = emotionResultsWithEmotion.value.firstOrNull {
-                        it.emotionResult.dateTime.toLocalDate() == day.date
-                    }?.emotionResult?.imageFileName
+                    emotionImageFileName = emotions.value.firstOrNull {
+                        it.dateTime.toLocalDate() == day.date
+                    }?.imageFileName
                 )
             },
             monthHeader = {

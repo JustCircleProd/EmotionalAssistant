@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,13 +36,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.bd.core.domain.models.User
+import com.example.bd.core.domain.models.Gender
 import com.example.bd.core.presentation.compontents.appNavigation.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.MyButton
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BdTheme
 import com.example.bd.core.presentation.theme.SubtitleTextColor
 import com.example.bd.core.presentation.theme.White
+import com.example.bd.core.utils.getGenderString
 import com.example.bd.registration.domain.validation.UserValidation
 import com.example.bd.registration.presentation.components.MyExposedDropDownMenu
 import com.example.bd.registration.presentation.components.MyTextField
@@ -127,11 +129,12 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            val genders = listOf(
-                stringResource(id = R.string.male_gender),
-                stringResource(id = R.string.female_gender)
-            )
-            val genderState = remember { mutableStateOf("") }
+            val genders = mutableMapOf<Gender, String>()
+            Gender.entries.forEach {
+                genders[it] = getGenderString(LocalContext.current, it)
+            }
+
+            val genderState = remember { mutableStateOf<Gender?>(null) }
             val isFirstInteractionWithGenderMenu = remember { mutableStateOf(true) }
 
             GenderExposedDropDownMenu(
@@ -153,15 +156,13 @@ fun RegisterScreen(
                 onClick = {
                     if (UserValidation.isNameValid(nameState.value) && UserValidation.isAgeValid(
                             ageState.value
-                        ) && UserValidation.isGenderValid(genders, genderState.value)
+                        ) && UserValidation.isGenderValid(genderState.value)
                     ) {
                         viewModel.onEvent(
                             RegisterEvent.OnConfirmPressed(
-                                User(
-                                    name = nameState.value,
-                                    age = ageState.value.toInt(),
-                                    gender = genderState.value
-                                )
+                                name = nameState.value,
+                                age = ageState.value.toInt(),
+                                gender = genderState.value!!
                             )
                         )
                         navController.navigate(NavigationItem.Home.route)
@@ -230,23 +231,24 @@ private fun AgeTextField(
     )
 }
 
+@Suppress("UNCHECKED_CAST")
 @Composable
 private fun GenderExposedDropDownMenu(
-    genders: List<String>,
-    genderState: MutableState<String>,
-    onValueChanged: (String) -> Unit,
+    genders: Map<Gender, String>,
+    genderState: MutableState<Gender?>,
+    onValueChanged: (Gender) -> Unit,
     isFirstInteraction: MutableState<Boolean>,
     userValidation: UserValidation
 ) {
     var isGenderValid by remember { mutableStateOf(false) }
 
     MyExposedDropDownMenu(
-        items = genders,
-        selectedTextState = genderState,
+        items = genders as Map<Any, String>,
+        selectedItemState = genderState as MutableState<Any?>,
         isError = { !(isFirstInteraction.value || isGenderValid) },
         errorText = stringResource(R.string.fill_in_the_field),
         onMenuItemClicked = {
-            isGenderValid = userValidation.isGenderValid(genders, it)
+            isGenderValid = userValidation.isGenderValid(it as Gender)
 
             if (isGenderValid) {
                 onValueChanged(it)

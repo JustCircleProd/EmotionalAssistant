@@ -1,24 +1,24 @@
 package com.example.bd.core.domain.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.types.RealmList
+import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PrimaryKey
+import org.mongodb.kbson.ObjectId
 
-@Entity(
-    tableName = "emotional_state_test",
-    foreignKeys = [
-        ForeignKey(
-            entity = EmotionalState::class,
-            parentColumns = ["id"],
-            childColumns = ["emotional_state_id"]
-        )
-    ]
-)
-data class EmotionalStateTest(
-    @PrimaryKey val id: Int,
-    @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "goal_score") val goalScore: Int,
-    @ColumnInfo(name = "emotional_state_id", index = true) val emotionalStateId: Int
-)
+class EmotionalStateTest : RealmObject {
+    @PrimaryKey
+    var _id: ObjectId = ObjectId()
 
+    var name: EmotionalStateName
+        get() {
+            return EmotionalStateName.valueOf(nameDescription)
+        }
+        set(value) {
+            nameDescription = value.name
+        }
+    private var nameDescription: String = EmotionalStateName.DEPRESSION.name
+
+    var goalScore: Int = 0
+    var questions: RealmList<EmotionalStateTestQuestion> = realmListOf()
+}

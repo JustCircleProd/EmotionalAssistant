@@ -37,7 +37,7 @@ fun MyButton(
 ) {
     Button(
         onClick = onClick,
-        shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corners_size)),
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corner_size)),
         colors = ButtonDefaults.buttonColors().copy(containerColor = containerColor),
         modifier = modifier
     ) {

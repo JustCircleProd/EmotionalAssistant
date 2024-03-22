@@ -1,30 +1,20 @@
 package com.example.bd.emotionRecognition.presentation.selectionFromList
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -34,11 +24,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.example.bd.core.domain.models.Emotion
+import com.example.bd.core.domain.models.EmotionName
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
+import com.example.bd.core.presentation.compontents.buttons.OptionButton
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
-import com.example.bd.core.presentation.theme.TonalButtonColor
 import com.example.bd.core.presentation.theme.White
 import com.example.bd.core.utils.getEmotionNameString
 import com.example.db.R
@@ -70,33 +60,33 @@ fun EmotionSelectionFromListScreen(
                     text = stringResource(R.string.select_your_emotion),
                     fontWeight = FontWeight.Bold,
                     fontFamily = AlegreyaFontFamily,
-                    fontSize = 27.sp,
+                    fontSize = 26.sp,
                     color = White,
                 )
 
                 Spacer(Modifier.height(40.dp))
 
-                val emotions = viewModel.emotions.collectAsStateWithLifecycle(listOf())
+                val emotions = EmotionName.entries
+                val emotionListItems = mutableMapOf<EmotionName, String>()
 
-                val emotionListItems = mutableMapOf<Emotion, String>()
-
-                emotions.value.forEach {
-                    emotionListItems[it] = getEmotionNameString(LocalContext.current, it.name)
+                emotions.forEach {
+                    emotionListItems[it] = getEmotionNameString(LocalContext.current, it)
                 }
 
                 val emotion by viewModel.emotion.collectAsStateWithLifecycle()
 
-                val selected: (Emotion) -> Boolean = {
-                    emotion == it
+                val selected: (Any) -> Boolean = {
+                    emotion == it as EmotionName
                 }
 
-                val onClick: (Emotion) -> Unit = {
-                    viewModel.emotion.value = it
+                val onClick: (Any) -> Unit = {
+                    viewModel.emotion.value = it as EmotionName
                 }
 
                 emotionListItems.onEachIndexed { index, entry ->
-                    EmotionListItem(
-                        item = entry,
+                    OptionButton(
+                        value = entry.key,
+                        text = entry.value,
                         selected = selected,
                         onClick = onClick
                     )
@@ -116,49 +106,6 @@ fun EmotionSelectionFromListScreen(
                     }
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun EmotionListItem(
-    item: Map.Entry<Emotion, String>,
-    selected: (Emotion) -> Boolean,
-    onClick: (Emotion) -> Unit
-) {
-    Card(
-        shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corners_size)),
-        colors = CardDefaults.cardColors().copy(containerColor = TonalButtonColor),
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                width = if (selected(item.key)) 2.dp else 0.dp,
-                color = if (selected(item.key)) MaterialTheme.colorScheme.primary else Color.Transparent,
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corners_size))
-            )
-            .clickable { onClick(item.key) }
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(
-                vertical = dimensionResource(id = R.dimen.button_content_vertical_text_padding),
-                horizontal = dimensionResource(id = R.dimen.button_content_horizontal_text_padding)
-            )
-        ) {
-            RadioButton(
-                selected = selected(item.key),
-                colors = RadioButtonDefaults.colors().copy(unselectedColor = White),
-                onClick = { }
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            Text(
-                text = item.value,
-                fontFamily = AlegreyaFontFamily,
-                fontSize = 20.sp,
-                color = White
-            )
         }
     }
 }

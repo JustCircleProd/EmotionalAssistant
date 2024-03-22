@@ -1,27 +1,41 @@
 package com.example.bd.core.data.repository
 
-import com.example.bd.core.data.db.AppDatabase
 import com.example.bd.core.domain.models.User
 import com.example.bd.core.domain.repository.UserRepository
+import io.realm.kotlin.Realm
+import io.realm.kotlin.UpdatePolicy
+import io.realm.kotlin.ext.query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class UserRepositoryImpl @Inject constructor(private val appDatabase: AppDatabase) :
+class UserRepositoryImpl @Inject constructor(private val realm: Realm) :
     UserRepository {
     override suspend fun insertUser(user: User) {
         withContext(Dispatchers.IO) {
-            appDatabase.userDao().insert(user)
+            realm.write {
+                copyToRealm(user, updatePolicy = UpdatePolicy.ALL)
+            }
         }
     }
 
     override fun isUserTableNotEmpty(): Flow<Boolean> =
-        appDatabase.userDao().isNotEmpty()
+        realm
+            .query<User>()
+            .find()
+            .asFlow()
+            .map {
+                it.list.toList().isNotEmpty()
+            }
 
-    override suspend fun getUser(): User =
-        appDatabase.userDao().get()
-
-    override fun getUserFlow(): Flow<User> =
-        appDatabase.userDao().getFlow()
+    override fun getUser(): Flow<User?> =
+        realm
+            .query<User>()
+            .first()
+            .asFlow()
+            .map {
+                it.obj
+            }
 }

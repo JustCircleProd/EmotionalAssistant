@@ -28,7 +28,7 @@
     <string name="main_screen_subtitle">Как вы себя чувствуете?</string>
     <string name="main_screen_title">Добро пожаловать, %1$s</string>
 
-    <string name="todays_emotion">Сегодняшняя эмоция</string>
+    <string name="your_emotion">Ваша эмоция</string>
     <string name="recognize_your_emotion">Определите эмоцию</string>
     <string name="recognize">Определить</string>
 

@@ -8,5 +8,5 @@ interface EmotionRepository {
 
     fun getAll(): Flow<List<Emotion>>
 
-    suspend fun getById(id: Int): Emotion
+    suspend fun delete(emotion: Emotion)
 }

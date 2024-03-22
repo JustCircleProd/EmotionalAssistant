@@ -32,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.bd.core.domain.models.EmotionResultWithEmotion
+import com.example.bd.core.domain.models.Emotion
 import com.example.bd.core.presentation.compontents.buttons.MyIconButton
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BottomSheetCardContainerColor
@@ -45,7 +45,7 @@ import java.io.File
 
 @Composable
 fun EmotionResultCard(
-    emotionResultWithEmotion: EmotionResultWithEmotion,
+    emotion: Emotion,
     onClick: () -> Unit,
     onDeleteButtonClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -67,7 +67,7 @@ fun EmotionResultCard(
             val context = LocalContext.current
 
             val emotionImageFileName =
-                emotionResultWithEmotion.emotionResult.imageFileName
+                emotion.imageFileName
 
             if (emotionImageFileName != null) {
                 EmotionResultImage(context, emotionImageFileName)
@@ -79,7 +79,7 @@ fun EmotionResultCard(
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.calendar_day_card_padding))
             ) {
-                EmotionResultInfo(context, emotionResultWithEmotion)
+                EmotionResultInfo(context, emotion)
 
                 EmotionResultActionButtons(
                     onEditButtonClick = {},
@@ -121,13 +121,13 @@ private fun EmotionResultImage(context: Context, emotionImageFileName: String) {
 @Composable
 private fun EmotionResultInfo(
     context: Context,
-    emotionResultWithEmotion: EmotionResultWithEmotion
+    emotion: Emotion
 ) {
     Column {
         Text(
             text = getEmotionNameString(
                 context,
-                emotionResultWithEmotion.emotion.name
+                emotion.name
             ),
             fontFamily = AlegreyaFontFamily,
             fontSize = 16.sp,
@@ -135,14 +135,14 @@ private fun EmotionResultInfo(
             color = White
         )
 
-        val hourStr = emotionResultWithEmotion.emotionResult.dateTime.hour.let {
+        val hourStr = emotion.dateTime.hour.let {
             if (it.toString().length == 1) {
                 "0$it"
             } else {
                 it
             }
         }
-        val minuteStr = emotionResultWithEmotion.emotionResult.dateTime.minute.let {
+        val minuteStr = emotion.dateTime.minute.let {
             if (it.toString().length == 1) {
                 "0$it"
             } else {

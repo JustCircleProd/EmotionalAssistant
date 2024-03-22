@@ -32,11 +32,11 @@ import com.example.db.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyExposedDropDownMenu(
-    items: List<String>,
-    selectedTextState: MutableState<String>,
-    onMenuItemClicked: (String) -> Unit,
+    items: Map<Any, String>,
+    selectedItemState: MutableState<Any?>,
+    onMenuItemClicked: (Any) -> Unit,
     isError: () -> Boolean,
-    errorText: String
+    errorText: String,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -48,7 +48,7 @@ fun MyExposedDropDownMenu(
         modifier = Modifier.fillMaxWidth()
     ) {
         TextField(
-            value = selectedTextState.value,
+            value = items[selectedItemState.value] ?: "",
             onValueChange = {},
             isError = isError(),
             supportingText = {
@@ -119,11 +119,11 @@ fun MyExposedDropDownMenu(
             items.forEach { item ->
                 DropdownMenuItem(
                     text = {
-                        Text(text = item, fontFamily = AlegreyaFontFamily)
+                        Text(text = item.value, fontFamily = AlegreyaFontFamily)
                     },
                     onClick = {
                         expanded = false
-                        onMenuItemClicked(item)
+                        onMenuItemClicked(item.key)
                     }
                 )
             }

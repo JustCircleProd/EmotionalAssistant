@@ -40,6 +40,7 @@ import com.example.bd.emotionRecognition.presentation.byPhoto.EmotionRecognition
 import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionViewModel
 import com.example.bd.emotionRecognition.presentation.methodSelection.EmotionRecognitionMethodSelectionScreen
 import com.example.bd.emotionRecognition.presentation.selectionFromList.EmotionSelectionFromListScreen
+import com.example.bd.emotionalStateTest.presentation.EmotionalStateTestScreen
 import com.example.bd.history.presentation.HistoryScreen
 import com.example.bd.home.presentation.HomeScreen
 import com.example.bd.registration.presentation.RegisterScreen
@@ -68,10 +69,6 @@ class MainActivity : ComponentActivity() {
                     val bottomBarVisibilityState = rememberSaveable { (mutableStateOf(true)) }
 
                     bottomBarVisibilityState.value = when (navBackStackEntry?.destination?.route) {
-                        NavigationItem.Welcome.route, NavigationItem.Register.route, NavigationItem.EmotionRecognitionMethodSelection.route -> {
-                            false
-                        }
-
                         NavigationItem.Home.route, NavigationItem.History.route -> {
                             true
                         }
@@ -108,7 +105,7 @@ class MainActivity : ComponentActivity() {
                                     }
 
                                     launch {
-                                        delay(300)
+                                        delay(400)
                                         isLoading = false
                                     }
                                 }
@@ -139,35 +136,41 @@ fun AppNavHost(
         startDestination = startDestination,
         modifier = modifier.fillMaxSize()
     ) {
-        animatedComposableForNavGraphBuilder(NavigationItem.Welcome.route) {
+        animatedComposable(NavigationItem.Welcome.route) {
             WelcomeScreen(navController)
         }
-        animatedComposableForNavGraphBuilder(NavigationItem.Register.route) {
+        animatedComposable(NavigationItem.Register.route) {
             RegisterScreen(navController)
         }
-        animatedComposableForNavGraphBuilder(NavigationItem.Home.route) {
+
+        animatedComposable(NavigationItem.Home.route) {
             HomeScreen(navController)
         }
-        animatedComposableForNavGraphBuilder(NavigationItem.EmotionRecognitionMethodSelection.route) {
+        animatedComposable(NavigationItem.History.route) {
+            HistoryScreen(navController)
+        }
+
+        animatedComposable(NavigationItem.EmotionRecognitionMethodSelection.route) {
             EmotionRecognitionMethodSelectionScreen(navController)
         }
-        animatedComposableForNavGraphBuilder(NavigationItem.EmotionRecognitionByPhoto.route) {
+        animatedComposable(NavigationItem.EmotionRecognitionByPhoto.route) {
             val viewModel = it.sharedViewModel<EmotionRecognitionViewModel>(
                 navController = navController,
                 viewModelOwnerRoute = NavigationItem.EmotionRecognitionMethodSelection.route
             )
             EmotionRecognitionByPhotoScreen(navController, viewModel)
         }
-        animatedComposableForNavGraphBuilder(NavigationItem.EmotionSelectionFromList.route) {
+        animatedComposable(NavigationItem.EmotionSelectionFromList.route) {
             EmotionSelectionFromListScreen(navController)
         }
-        animatedComposableForNavGraphBuilder(NavigationItem.History.route) {
-            HistoryScreen(navController)
+
+        animatedComposable(NavigationItem.EmotionalStateTest.route) {
+            EmotionalStateTestScreen(navController)
         }
     }
 }
 
-fun NavGraphBuilder.animatedComposableForNavGraphBuilder(
+private fun NavGraphBuilder.animatedComposable(
     route: String,
     arguments: List<NamedNavArgument> = emptyList(),
     content: @Composable (AnimatedContentScope.(NavBackStackEntry) -> Unit)
