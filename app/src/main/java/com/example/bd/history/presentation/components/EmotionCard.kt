@@ -16,10 +16,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,9 +39,11 @@ import com.example.bd.core.domain.models.Emotion
 import com.example.bd.core.presentation.compontents.buttons.MyIconButton
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BottomSheetCardContainerColor
+import com.example.bd.core.presentation.theme.MyRippleTheme
 import com.example.bd.core.presentation.theme.Red
 import com.example.bd.core.presentation.theme.SubtitleTextColor
 import com.example.bd.core.presentation.theme.White
+import com.example.bd.core.utils.formatLocalTime
 import com.example.bd.core.utils.getEmotionNameString
 import com.example.db.R
 import java.io.File
@@ -70,7 +75,7 @@ fun EmotionResultCard(
                 emotion.imageFileName
 
             if (emotionImageFileName != null) {
-                EmotionResultImage(context, emotionImageFileName)
+                EmotionImage(context, emotionImageFileName)
             }
 
             Column(
@@ -79,9 +84,9 @@ fun EmotionResultCard(
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.calendar_day_card_padding))
             ) {
-                EmotionResultInfo(context, emotion)
+                EmotionInfo(context, emotion)
 
-                EmotionResultActionButtons(
+                EmotionActionButtons(
                     onEditButtonClick = {},
                     onDeleteButtonClick = onDeleteButtonClick,
                     onClick = onClick
@@ -92,7 +97,7 @@ fun EmotionResultCard(
 }
 
 @Composable
-private fun EmotionResultImage(context: Context, emotionImageFileName: String) {
+private fun EmotionImage(context: Context, emotionImageFileName: String) {
     val imagePath =
         File(context.filesDir, emotionImageFileName)
 
@@ -119,7 +124,7 @@ private fun EmotionResultImage(context: Context, emotionImageFileName: String) {
 }
 
 @Composable
-private fun EmotionResultInfo(
+private fun EmotionInfo(
     context: Context,
     emotion: Emotion
 ) {
@@ -135,23 +140,8 @@ private fun EmotionResultInfo(
             color = White
         )
 
-        val hourStr = emotion.dateTime.hour.let {
-            if (it.toString().length == 1) {
-                "0$it"
-            } else {
-                it
-            }
-        }
-        val minuteStr = emotion.dateTime.minute.let {
-            if (it.toString().length == 1) {
-                "0$it"
-            } else {
-                it
-            }
-        }
-
         Text(
-            text = "$hourStr:$minuteStr",
+            text = formatLocalTime(emotion.dateTime.toLocalTime()),
             fontFamily = AlegreyaFontFamily,
             fontSize = 15.sp,
             color = SubtitleTextColor
@@ -160,7 +150,7 @@ private fun EmotionResultInfo(
 }
 
 @Composable
-private fun EmotionResultActionButtons(
+private fun EmotionActionButtons(
     onEditButtonClick: () -> Unit,
     onDeleteButtonClick: () -> Unit,
     onClick: () -> Unit
@@ -176,11 +166,13 @@ private fun EmotionResultActionButtons(
                 onClick = onEditButtonClick
             )
 
-            MyIconButton(
-                imageVector = Icons.Rounded.Delete,
-                iconTintColor = Red,
-                onClick = onDeleteButtonClick
-            )
+            CompositionLocalProvider(LocalRippleTheme provides MyRippleTheme(color = Red)) {
+                MyIconButton(
+                    imageVector = Icons.Rounded.Delete,
+                    iconTintColor = MaterialTheme.colorScheme.error,
+                    onClick = onDeleteButtonClick
+                )
+            }
         }
 
         MyIconButton(

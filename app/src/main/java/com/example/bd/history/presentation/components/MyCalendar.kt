@@ -1,6 +1,7 @@
 package com.example.bd.history.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -66,9 +66,9 @@ import java.util.Locale
 
 @Composable
 fun MyCalendar(
-    selectedDate: State<LocalDate?>,
+    selectedDate: LocalDate?,
     onDateSelected: (LocalDate) -> Unit,
-    emotions: State<List<Emotion>>,
+    emotions: List<Emotion>,
     modifier: Modifier = Modifier
 ) {
     val currentMonth = remember { YearMonth.now() }
@@ -111,12 +111,12 @@ fun MyCalendar(
             dayContent = { day ->
                 Day(
                     day = day,
-                    isSelected = selectedDate.value == day.date,
+                    isSelected = selectedDate == day.date,
                     onClick = {
                         onDateSelected(it.date)
                     },
-                    emotionImageFileName = emotions.value.firstOrNull {
-                        it.dateTime.toLocalDate() == day.date
+                    emotionImageFileName = emotions.firstOrNull {
+                        it.dateTime.toLocalDate() == day.date && it.imageFileName != null
                     }?.imageFileName
                 )
             },
@@ -253,6 +253,17 @@ private fun Day(
             .padding(dimensionResource(id = R.dimen.calendar_day_cell_padding))
             .clip(CircleShape)
             .clickable { onClick(day) }
+            .run {
+                if (day.date == LocalDate.now() && !isSelected) {
+                    border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape
+                    )
+                } else {
+                    this
+                }
+            }
     ) {
         if (day.position != DayPosition.MonthDate) return@Box
 

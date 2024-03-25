@@ -1,11 +1,11 @@
-package com.example.bd.registration.presentation.components
+package com.example.bd.core.presentation.compontents
 
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -16,44 +16,49 @@ import com.example.bd.core.presentation.theme.White
 
 @Composable
 fun MyTextField(
-    state: MutableState<String>,
-    isError: () -> Boolean,
-    errorText: String,
+    value: String,
     onValueChange: (String) -> Unit,
-    placeholderText: String,
+    labelText: String,
     modifier: Modifier = Modifier,
+    maxLines: Int = 1,
+    isError: Boolean = false,
+    errorText: String = "",
+    readOnly: Boolean = false,
+    enabled: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions()
 ) {
     TextField(
-        value = state.value,
+        value = value,
         onValueChange = onValueChange,
-        placeholder = {
+        readOnly = readOnly,
+        enabled = enabled,
+        label = {
             Text(
-                text = placeholderText,
+                text = labelText,
                 fontFamily = AlegreyaFontFamily,
                 color = UnfocusedTextFieldColor,
-                fontSize = 16.sp
+                fontSize = 15.sp
             )
         },
         supportingText = {
-            if (isError()) {
+            if (isError) {
                 Text(
                     text = errorText,
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     fontFamily = AlegreyaFontFamily,
                     fontSize = 15.sp
                 )
             }
         },
         keyboardOptions = keyboardOptions,
-        singleLine = true,
-        maxLines = 1,
+        maxLines = maxLines,
+        singleLine = maxLines == 1,
         textStyle = TextStyle(
             fontFamily = AlegreyaFontFamily,
             color = White,
-            fontSize = 16.sp
+            fontSize = 17.sp
         ),
-        isError = isError(),
+        isError = isError,
         colors = TextFieldDefaults.colors().copy(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,

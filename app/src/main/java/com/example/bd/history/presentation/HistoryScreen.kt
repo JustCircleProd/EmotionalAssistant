@@ -31,6 +31,7 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,15 +47,17 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.bd.core.domain.models.Emotion
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BottomSheetCardContainerColor
 import com.example.bd.core.presentation.theme.BottomSheetContainerColor
-import com.example.bd.core.presentation.theme.SubtitleTextColor
 import com.example.bd.core.presentation.theme.White
+import com.example.bd.core.utils.formatLocalDate
 import com.example.bd.history.presentation.components.EmotionResultCard
 import com.example.bd.history.presentation.components.MyCalendar
 import com.example.db.R
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,28 +65,16 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
     Surface {
         val scaffoldState = rememberBottomSheetScaffoldState()
 
-        val emotions =
-            viewModel.emotions.collectAsStateWithLifecycle(initialValue = listOf())
+        val emotions by
+        viewModel.emotions.collectAsStateWithLifecycle(initialValue = listOf())
 
-        val selectedDate = viewModel.selectedDate.collectAsStateWithLifecycle()
+        val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
 
-        LaunchedEffect(selectedDate.value) {
-            if (selectedDate.value == null) return@LaunchedEffect
+        LaunchedEffect(selectedDate) {
+            if (selectedDate == null) return@LaunchedEffect
 
             launch {
                 scaffoldState.bottomSheetState.expand()
-            }
-        }
-
-        val emotionForSelectedDate = remember(selectedDate) {
-            derivedStateOf {
-                if (selectedDate.value != null) {
-                    emotions.value.filter {
-                        it.dateTime.toLocalDate() == selectedDate.value
-                    }
-                } else {
-                    listOf()
-                }
             }
         }
 
@@ -91,79 +82,11 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
             scaffoldState = scaffoldState,
             sheetContainerColor = BottomSheetContainerColor,
             sheetContent = {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_horizontal_padding))
-                        .padding(bottom = dimensionResource(id = R.dimen.bottom_sheet_bottom_padding))
-                ) {
-                    if (selectedDate.value != null) {
-                        Text(
-                            text = selectedDate.value.toString(),
-                            fontWeight = FontWeight.Medium,
-                            fontFamily = AlegreyaFontFamily,
-                            fontSize = 24.sp,
-                            color = White,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(Modifier.height(16.dp))
-
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            item(span = { GridItemSpan(maxLineSpan) }) {
-                                EmotionalStateCard(onClick = {})
-                            }
-
-                            item(span = { GridItemSpan(maxLineSpan) }) {
-                                Spacer(Modifier.height(12.dp))
-
-                                Text(
-                                    text = "Ваши эмоции",
-                                    fontWeight = FontWeight.Medium,
-                                    fontFamily = AlegreyaFontFamily,
-                                    fontSize = 19.sp,
-                                    color = White,
-                                    textAlign = TextAlign.Center
-                                )
-
-                                Spacer(Modifier.height(8.dp))
-                            }
-
-                            if (emotionForSelectedDate.value.isEmpty()) {
-                                item(span = { GridItemSpan(maxLineSpan) }) {
-                                    Text(
-                                        text = stringResource(id = R.string.no_emotions),
-                                        fontFamily = AlegreyaFontFamily,
-                                        fontSize = 17.sp,
-                                        color = SubtitleTextColor,
-                                        textAlign = TextAlign.Center,
-                                    )
-                                }
-                                return@LazyVerticalGrid
-                            }
-
-                            items(emotionForSelectedDate.value.size) {
-                                val emotion = emotionForSelectedDate.value[it]
-
-                                EmotionResultCard(
-                                    emotion,
-                                    modifier = Modifier.weight(1f),
-                                    onClick = {
-
-                                    },
-                                    onDeleteButtonClick = {
-                                        viewModel.deleteEmotionResult(emotion)
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
+                BottomSheetContent(
+                    selectedDate = selectedDate,
+                    emotions = emotions,
+                    viewModel = viewModel
+                )
             },
             sheetPeekHeight = 0.dp,
             sheetDragHandle = { BottomSheetDefaults.DragHandle(color = White) }
@@ -199,6 +122,104 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
     }
 }
 
+@Composable
+private fun BottomSheetContent(
+    selectedDate: LocalDate?,
+    emotions: List<Emotion>,
+    viewModel: HistoryViewModel
+) {
+    val emotionsForSelectedDate = remember(selectedDate) {
+        derivedStateOf {
+            if (selectedDate != null) {
+                emotions.filter {
+                    it.dateTime.toLocalDate() == selectedDate
+                }
+            } else {
+                listOf()
+            }
+        }
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_horizontal_padding))
+            .padding(bottom = dimensionResource(id = R.dimen.bottom_sheet_bottom_padding))
+    ) {
+        if (selectedDate != null) {
+            Text(
+                text = formatLocalDate(selectedDate),
+                fontWeight = FontWeight.Medium,
+                fontFamily = AlegreyaFontFamily,
+                fontSize = 24.sp,
+                color = White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                /*item(span = { GridItemSpan(maxLineSpan) }) {
+                    Text(
+                        text = stringResource(id = R.string.no_data),
+                        fontFamily = AlegreyaFontFamily,
+                        fontSize = 17.sp,
+                        color = SubtitleTextColor,
+                        textAlign = TextAlign.Center,
+                    )
+                }*/
+
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Text(
+                        text = stringResource(R.string.emotional_states),
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = AlegreyaFontFamily,
+                        fontSize = 19.sp,
+                        color = White,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+                }
+
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Spacer(Modifier.height(18.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.emotions),
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = AlegreyaFontFamily,
+                        fontSize = 19.sp,
+                        color = White,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+                }
+
+                items(emotionsForSelectedDate.value.size) {
+                    val emotion = emotionsForSelectedDate.value[it]
+
+                    EmotionResultCard(
+                        emotion,
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+
+                        },
+                        onDeleteButtonClick = {
+                            viewModel.deleteEmotionResult(emotion)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 private fun EmotionalStateCard(

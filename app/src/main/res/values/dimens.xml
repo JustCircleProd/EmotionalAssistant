@@ -31,8 +31,9 @@
     <dimen name="action_card_button_content_vertical_text_padding">4dp</dimen>
 
 
-    <dimen name="emotion_recognition_photo_width">300dp</dimen>
-    <dimen name="emotion_recognition_photo_height">400dp</dimen>
+    <dimen name="emotion_image_width">300dp</dimen>
+    <dimen name="emotion_image_height">400dp</dimen>
+    <dimen name="emotion_image_rounded_corner_size">20dp</dimen>
 
 
     <dimen name="calendar_day_cell_padding">4dp</dimen>

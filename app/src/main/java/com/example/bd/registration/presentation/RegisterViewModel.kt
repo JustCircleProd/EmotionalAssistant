@@ -6,7 +6,6 @@ import com.example.bd.core.domain.models.Gender
 import com.example.bd.core.domain.models.User
 import com.example.bd.core.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.realm.kotlin.Realm
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,7 +28,7 @@ class RegisterViewModel @Inject constructor(private val userRepository: UserRepo
     }
 
     private suspend fun registerUser(userName: String, userAge: Int, userGender: Gender) {
-        userRepository.insertUser(
+        userRepository.insert(
             User().apply {
                 name = userName
                 age = userAge

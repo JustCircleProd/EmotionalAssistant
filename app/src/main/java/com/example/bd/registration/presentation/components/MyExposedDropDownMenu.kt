@@ -9,11 +9,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,10 +33,11 @@ import com.example.db.R
 @Composable
 fun MyExposedDropDownMenu(
     items: Map<Any, String>,
-    selectedItemState: MutableState<Any?>,
+    selectedItem: Any?,
     onMenuItemClicked: (Any) -> Unit,
-    isError: () -> Boolean,
-    errorText: String,
+    labelText: String,
+    isError: Boolean = false,
+    errorText: String = ""
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -48,25 +49,25 @@ fun MyExposedDropDownMenu(
         modifier = Modifier.fillMaxWidth()
     ) {
         TextField(
-            value = items[selectedItemState.value] ?: "",
+            value = items[selectedItem] ?: "",
             onValueChange = {},
-            isError = isError(),
+            isError = isError,
             supportingText = {
-                if (isError()) {
+                if (isError) {
                     Text(
                         text = errorText,
-                        color = Color.Red,
+                        color = MaterialTheme.colorScheme.error,
                         fontFamily = AlegreyaFontFamily,
                         fontSize = 15.sp
                     )
                 }
             },
-            placeholder = {
+            label = {
                 Text(
-                    text = stringResource(id = R.string.gender),
+                    text = labelText,
                     color = UnfocusedTextFieldColor,
                     fontFamily = AlegreyaFontFamily,
-                    fontSize = 16.sp
+                    fontSize = 15.sp
                 )
             },
             trailingIcon = {
@@ -93,7 +94,7 @@ fun MyExposedDropDownMenu(
             textStyle = TextStyle(
                 fontFamily = AlegreyaFontFamily,
                 color = White,
-                fontSize = 16.sp
+                fontSize = 17.sp
             ),
             colors = TextFieldDefaults.colors().copy(
                 focusedContainerColor = Color.Transparent,
@@ -119,7 +120,12 @@ fun MyExposedDropDownMenu(
             items.forEach { item ->
                 DropdownMenuItem(
                     text = {
-                        Text(text = item.value, fontFamily = AlegreyaFontFamily)
+                        Text(
+                            text = item.value,
+                            fontFamily = AlegreyaFontFamily,
+                            color = White,
+                            fontSize = 17.sp
+                        )
                     },
                     onClick = {
                         expanded = false

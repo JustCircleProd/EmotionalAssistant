@@ -2,6 +2,7 @@
     <string name="app_name">Эмоциональный помощник</string>
 
     <string name="back">Назад</string>
+    <string name="cancel">Отмена</string>
     <string name="confirm">Подтвердить</string>
 
     <string name="icon_emotion_content_description">Иконка улыбающегося лица</string>
@@ -25,10 +26,17 @@
     <string name="home">Главная</string>
     <string name="history">История</string>
 
+
     <string name="main_screen_subtitle">Как вы себя чувствуете?</string>
     <string name="main_screen_title">Добро пожаловать, %1$s</string>
 
-    <string name="your_emotion">Ваша эмоция</string>
+
+    <string name="emotional_states">Эмоциональные состояния</string>
+    <string name="emotions">Эмоции</string>
+
+    <string name="no_data">Нет данных</string>
+
+
     <string name="recognize_your_emotion">Определите эмоцию</string>
     <string name="recognize">Определить</string>
 
@@ -39,7 +47,10 @@
 
 
     <string name="face_detection">Обнаружение лица</string>
+    <string name="face_not_detected">Лицо не обнаружено</string>
     <string name="emotion_recognition">Распознавание эмоции</string>
+    <string name="recognition_error_try_again">Ошибка распознавания.\nПопробуйте снова</string>
+    <string name="to_choose_a_method">К выбору метода</string>
 
 
     <string name="select_your_emotion">Выберите вашу эмоцию</string>
@@ -50,6 +61,16 @@
     <string name="neutral">Нейтральность</string>
     <string name="sad">Грусть</string>
     <string name="surprise">Удивление</string>
+
+    <string name="emotion_added">Эмоция добавлена</string>
+    <string name="would_you_like_to_add_additional_info">Хотите указать дополнительную информацию?</string>
+
+    <string name="select_time">Выберите время</string>
+
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="note">Заметка</string>
+
 
     <string name="history_of_your_states">История ваших состояний</string>
 
@@ -65,6 +86,4 @@
     <string name="october">Октябрь</string>
     <string name="november">Ноябрь</string>
     <string name="december">Декабрь</string>
-
-    <string name="no_emotions">Нет эмоций</string>
 </resources>

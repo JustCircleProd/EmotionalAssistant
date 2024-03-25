@@ -22,21 +22,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.mongodb.kbson.ObjectId
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.io.IOException
 import java.time.LocalDateTime
 import javax.inject.Inject
-
-/**
- * ViewModel for EmotionRecognitionMethodSelectionScreen and EmotionRecognitionByPhoto
- **/
-
-enum class EmotionRecognitionStage {
-    FACE_DETECTION,
-    EMOTION_CLASSIFICATION,
-    EMOTION_CLASSIFIED
-}
 
 @HiltViewModel
 class EmotionRecognitionViewModel @Inject constructor(
@@ -54,12 +45,15 @@ class EmotionRecognitionViewModel @Inject constructor(
         FaceDetection.getClient(options)
     }
 
-    val emotion = MutableStateFlow<EmotionName?>(null)
+    val recognizedEmotion = MutableStateFlow<EmotionName?>(null)
+
     val imageBitmap = MutableStateFlow<Bitmap?>(null)
 
     val recognitionStage = MutableStateFlow(EmotionRecognitionStage.FACE_DETECTION)
 
-    private var imageFileName: String = ""
+    private var imageFileName: String? = null
+
+    val savedEmotionId = MutableStateFlow<ObjectId?>(null)
 
     override fun onCleared() {
         super.onCleared()
@@ -68,7 +62,7 @@ class EmotionRecognitionViewModel @Inject constructor(
 
     fun onEvent(event: EmotionRecognitionEvent) {
         when (event) {
-            EmotionRecognitionEvent.OnBackPressedOnEmotionRecognitionByPhotoScreen -> {
+            EmotionRecognitionEvent.OnBackPressed -> {
                 clearFields()
             }
 
@@ -87,10 +81,10 @@ class EmotionRecognitionViewModel @Inject constructor(
     }
 
     private fun clearFields() {
-        emotion.value = null
+        recognizedEmotion.value = null
         imageBitmap.value = null
         recognitionStage.value = EmotionRecognitionStage.FACE_DETECTION
-        imageFileName = ""
+        imageFileName = null
     }
 
     private fun preprocessImageBitmap(context: Context, uri: Uri) {
@@ -104,21 +98,28 @@ class EmotionRecognitionViewModel @Inject constructor(
             .addOnSuccessListener { faces ->
                 if (faces.isNotEmpty()) {
                     viewModelScope.launch(Dispatchers.Default) {
+                        delay(1000)
                         cropDetectedFace(imageBitmap.value!!, faces[0])
 
                         imageFileName = internalStorageRepository.getImageFileName()
-                        internalStorageRepository.saveImage(imageFileName, imageBitmap.value!!)
+                        internalStorageRepository.saveImage(imageFileName!!, imageBitmap.value!!)
 
+                        delay(2000)
                         classify()
                     }
+                } else {
+                    recognitionStage.value = EmotionRecognitionStage.FACE_NOT_DETECTED
                 }
             }
-            .addOnFailureListener { e ->
-
+            .addOnFailureListener {
+                recognitionStage.value = EmotionRecognitionStage.ERROR
+            }
+            .addOnCanceledListener {
+                recognitionStage.value = EmotionRecognitionStage.ERROR
             }
     }
 
-    private suspend fun cropDetectedFace(bitmap: Bitmap, face: Face) {
+    private fun cropDetectedFace(bitmap: Bitmap, face: Face) {
         val rect = face.boundingBox
 
         val x = rect.left.coerceAtLeast(0)
@@ -134,14 +135,12 @@ class EmotionRecognitionViewModel @Inject constructor(
             if (y + height > bitmap.height) bitmap.height - y else height,
         )
 
-        delay(1000)
-
         imageBitmap.value = croppedBitmap
         recognitionStage.value = EmotionRecognitionStage.EMOTION_CLASSIFICATION
     }
 
 
-    private suspend fun classify() {
+    private fun classify() {
         try {
             val image = Bitmap.createScaledBitmap(imageBitmap.value!!, imageSize, imageSize, false)
 
@@ -159,8 +158,6 @@ class EmotionRecognitionViewModel @Inject constructor(
             val outputFeature0 = outputs.outputFeature0AsTensorBuffer
             val confidences = outputFeature0.floatArray.toList()
 
-            delay(2000)
-
             var max = 0f
             var maxIndex = 0
             confidences.forEachIndexed { index, element ->
@@ -170,22 +167,23 @@ class EmotionRecognitionViewModel @Inject constructor(
                 }
             }
 
-            emotion.value = EmotionName.entries[maxIndex]
+            recognizedEmotion.value = EmotionName.entries[maxIndex]
             recognitionStage.value = EmotionRecognitionStage.EMOTION_CLASSIFIED
         } catch (e: IOException) {
-            // TODO Handle the exception
+            recognitionStage.value = EmotionRecognitionStage.ERROR
         }
     }
 
     private fun saveEmotionResult() {
         viewModelScope.launch {
-            emotionRepository.insert(
-                Emotion().apply {
-                    dateTime = LocalDateTime.now()
-                    imageFileName = this@EmotionRecognitionViewModel.imageFileName
-                    name = emotion.value!!
-                }
-            )
+            val emotion = Emotion().apply {
+                name = recognizedEmotion.value!!
+                dateTime = LocalDateTime.now()
+                imageFileName = this@EmotionRecognitionViewModel.imageFileName
+            }
+
+            emotionRepository.insert(emotion)
+            savedEmotionId.value = emotion._id
         }
     }
 }

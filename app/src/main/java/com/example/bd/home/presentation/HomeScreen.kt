@@ -22,7 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.bd.core.presentation.compontents.appNavigation.NavigationItem
+import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BdTheme
 import com.example.bd.core.presentation.theme.SubtitleTextColor
@@ -64,7 +64,7 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
             Spacer(modifier = Modifier.height(20.dp))
 
             HomeActionCard(
-                title = stringResource(R.string.your_emotion),
+                title = stringResource(R.string.emotions),
                 subtitle = stringResource(R.string.recognize_your_emotion),
                 buttonText = stringResource(R.string.recognize),
                 onButtonClick = {

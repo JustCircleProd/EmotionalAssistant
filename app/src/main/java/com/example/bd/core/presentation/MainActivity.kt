@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -31,11 +32,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.bd.core.presentation.compontents.appNavigation.NavigationItem
+import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.botomNavigationBar.BottomNavigationBar
 import com.example.bd.core.presentation.compontents.sharedViewModel
 import com.example.bd.core.presentation.theme.BdTheme
 import com.example.bd.core.presentation.theme.MyRippleTheme
+import com.example.bd.emotionAdditionalInfo.presentation.EmotionAdditionalInfoScreen
 import com.example.bd.emotionRecognition.presentation.byPhoto.EmotionRecognitionByPhotoScreen
 import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionViewModel
 import com.example.bd.emotionRecognition.presentation.methodSelection.EmotionRecognitionMethodSelectionScreen
@@ -63,7 +65,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BdTheme {
-                CompositionLocalProvider(LocalRippleTheme provides MyRippleTheme) {
+                CompositionLocalProvider(
+                    LocalRippleTheme provides MyRippleTheme(color = MaterialTheme.colorScheme.primary)
+                ) {
                     val navController = rememberNavController()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val bottomBarVisibilityState = rememberSaveable { (mutableStateOf(true)) }
@@ -161,7 +165,15 @@ fun AppNavHost(
             EmotionRecognitionByPhotoScreen(navController, viewModel)
         }
         animatedComposable(NavigationItem.EmotionSelectionFromList.route) {
-            EmotionSelectionFromListScreen(navController)
+            val viewModel = it.sharedViewModel<EmotionRecognitionViewModel>(
+                navController = navController,
+                viewModelOwnerRoute = NavigationItem.EmotionRecognitionMethodSelection.route
+            )
+            EmotionSelectionFromListScreen(navController, viewModel)
+        }
+
+        animatedComposable(NavigationItem.EmotionAdditionalInfo().route) {
+            EmotionAdditionalInfoScreen(navController)
         }
 
         animatedComposable(NavigationItem.EmotionalStateTest.route) {

@@ -15,7 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +28,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,7 +38,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.bd.core.domain.models.Gender
-import com.example.bd.core.presentation.compontents.appNavigation.NavigationItem
+import com.example.bd.core.presentation.compontents.MyTextField
+import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.MyButton
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BdTheme
@@ -46,7 +48,6 @@ import com.example.bd.core.presentation.theme.White
 import com.example.bd.core.utils.getGenderString
 import com.example.bd.registration.domain.validation.UserValidation
 import com.example.bd.registration.presentation.components.MyExposedDropDownMenu
-import com.example.bd.registration.presentation.components.MyTextField
 import com.example.db.R
 
 @Composable
@@ -57,7 +58,6 @@ fun RegisterScreen(
     Surface {
         Column(
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start,
             modifier = Modifier
                 .fillMaxSize()
                 .paint(
@@ -84,7 +84,7 @@ fun RegisterScreen(
                 text = stringResource(id = R.string.your_data_title),
                 fontWeight = FontWeight.Bold,
                 fontFamily = AlegreyaFontFamily,
-                fontSize = 27.sp,
+                fontSize = 26.sp,
                 color = White,
             )
 
@@ -99,32 +99,32 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(50.dp))
 
-            val nameState = remember { mutableStateOf("") }
-            val isFirstInteractionWithNameTextField = remember { mutableStateOf(true) }
+            var name by remember { mutableStateOf("") }
+            var isFirstInteractionWithNameTextField by remember { mutableStateOf(true) }
 
             NameTextField(
-                nameState = nameState,
-                onValueChanged = {
-                    nameState.value = it
-                    isFirstInteractionWithNameTextField.value = false
-                },
+                name = name,
                 isFirstInteraction = isFirstInteractionWithNameTextField,
-                userValidation = UserValidation
+                userValidation = UserValidation,
+                onValueChanged = {
+                    name = it
+                    isFirstInteractionWithNameTextField = false
+                }
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            val ageState = remember { mutableStateOf("") }
-            val isFirstInteractionWithAgeTextField = remember { mutableStateOf(true) }
+            var age by remember { mutableStateOf("") }
+            var isFirstInteractionWithAgeTextField by remember { mutableStateOf(true) }
 
             AgeTextField(
-                ageState = ageState,
-                onValueChanged = {
-                    ageState.value = it
-                    isFirstInteractionWithAgeTextField.value = false
-                },
+                age = age,
                 isFirstInteraction = isFirstInteractionWithAgeTextField,
-                userValidation = UserValidation
+                userValidation = UserValidation,
+                onValueChanged = {
+                    age = it
+                    isFirstInteractionWithAgeTextField = false
+                }
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -134,15 +134,15 @@ fun RegisterScreen(
                 genders[it] = getGenderString(LocalContext.current, it)
             }
 
-            val genderState = remember { mutableStateOf<Gender?>(null) }
-            val isFirstInteractionWithGenderMenu = remember { mutableStateOf(true) }
+            var gender by remember { mutableStateOf<Gender?>(null) }
+            var isFirstInteractionWithGenderMenu by remember { mutableStateOf(true) }
 
             GenderExposedDropDownMenu(
                 genders = genders,
-                genderState = genderState,
+                selectedGender = gender,
                 onValueChanged = {
-                    genderState.value = it
-                    isFirstInteractionWithGenderMenu.value = false
+                    gender = it
+                    isFirstInteractionWithGenderMenu = false
                 },
                 isFirstInteraction = isFirstInteractionWithGenderMenu,
                 userValidation = UserValidation
@@ -154,22 +154,23 @@ fun RegisterScreen(
                 text = stringResource(id = R.string.confirm),
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    if (UserValidation.isNameValid(nameState.value) && UserValidation.isAgeValid(
-                            ageState.value
-                        ) && UserValidation.isGenderValid(genderState.value)
+                    if (
+                        UserValidation.isNameValid(name) &&
+                        UserValidation.isAgeValid(age) &&
+                        UserValidation.isGenderValid(gender)
                     ) {
                         viewModel.onEvent(
                             RegisterEvent.OnConfirmPressed(
-                                name = nameState.value,
-                                age = ageState.value.toInt(),
-                                gender = genderState.value!!
+                                name = name,
+                                age = age.toInt(),
+                                gender = gender!!
                             )
                         )
                         navController.navigate(NavigationItem.Home.route)
                     } else {
-                        isFirstInteractionWithNameTextField.value = false
-                        isFirstInteractionWithAgeTextField.value = false
-                        isFirstInteractionWithGenderMenu.value = false
+                        isFirstInteractionWithNameTextField = false
+                        isFirstInteractionWithAgeTextField = false
+                        isFirstInteractionWithGenderMenu = false
                     }
                 }
             )
@@ -179,54 +180,52 @@ fun RegisterScreen(
 
 @Composable
 private fun NameTextField(
-    nameState: MutableState<String>,
-    onValueChanged: (String) -> Unit,
-    isFirstInteraction: MutableState<Boolean>,
-    userValidation: UserValidation
+    name: String,
+    isFirstInteraction: Boolean,
+    userValidation: UserValidation,
+    onValueChanged: (String) -> Unit
 ) {
     var isNameValid by remember { mutableStateOf(false) }
 
-    val isNameTextFieldError =
-        { !(isFirstInteraction.value || isNameValid) }
-
     MyTextField(
-        state = nameState,
-        isError = isNameTextFieldError,
+        value = name,
+        isError = !(isFirstInteraction || isNameValid),
         errorText = stringResource(R.string.fill_in_the_field),
         onValueChange = {
             isNameValid = userValidation.isNameValid(it)
-            if (isNameValid) {
-                onValueChanged(it)
-            }
-
+            onValueChanged(it)
         },
-        placeholderText = stringResource(id = R.string.name),
+        labelText = stringResource(id = R.string.name),
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Sentences,
+            imeAction = ImeAction.Next
+        ),
         modifier = Modifier.fillMaxWidth()
     )
 }
 
 @Composable
 private fun AgeTextField(
-    ageState: MutableState<String>,
-    onValueChanged: (String) -> Unit,
-    isFirstInteraction: MutableState<Boolean>,
-    userValidation: UserValidation
+    age: String,
+    isFirstInteraction: Boolean,
+    userValidation: UserValidation,
+    onValueChanged: (String) -> Unit
 ) {
     var isAgeValid by remember { mutableStateOf(false) }
 
     MyTextField(
-        state = ageState,
-        isError = { !(isFirstInteraction.value || isAgeValid) },
+        value = age,
+        isError = !(isFirstInteraction || isAgeValid),
         errorText = stringResource(R.string.fill_in_the_field),
         onValueChange = {
             isAgeValid = userValidation.isAgeValid(it)
-
-            if (isAgeValid) {
-                onValueChanged(it)
-            }
+            onValueChanged(it)
         },
-        placeholderText = stringResource(id = R.string.age),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        labelText = stringResource(id = R.string.age),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -235,18 +234,19 @@ private fun AgeTextField(
 @Composable
 private fun GenderExposedDropDownMenu(
     genders: Map<Gender, String>,
-    genderState: MutableState<Gender?>,
-    onValueChanged: (Gender) -> Unit,
-    isFirstInteraction: MutableState<Boolean>,
-    userValidation: UserValidation
+    selectedGender: Gender?,
+    isFirstInteraction: Boolean,
+    userValidation: UserValidation,
+    onValueChanged: (Gender) -> Unit
 ) {
     var isGenderValid by remember { mutableStateOf(false) }
 
     MyExposedDropDownMenu(
         items = genders as Map<Any, String>,
-        selectedItemState = genderState as MutableState<Any?>,
-        isError = { !(isFirstInteraction.value || isGenderValid) },
+        selectedItem = selectedGender as Any?,
+        labelText = stringResource(id = R.string.gender),
         errorText = stringResource(R.string.fill_in_the_field),
+        isError = !(isFirstInteraction || isGenderValid),
         onMenuItemClicked = {
             isGenderValid = userValidation.isGenderValid(it as Gender)
 

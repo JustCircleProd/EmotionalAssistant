@@ -1,5 +1,6 @@
 package com.example.bd.emotionRecognition.presentation.selectionFromList
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,27 +26,42 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.bd.core.domain.models.EmotionName
+import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
 import com.example.bd.core.presentation.compontents.buttons.OptionButton
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.White
 import com.example.bd.core.utils.getEmotionNameString
+import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionEvent
+import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionViewModel
 import com.example.db.R
+import com.google.gson.GsonBuilder
+import kotlinx.coroutines.launch
 
 @Composable
 fun EmotionSelectionFromListScreen(
     navController: NavHostController,
-    viewModel: EmotionSelectionFromListViewModel = hiltViewModel()
+    viewModel: EmotionRecognitionViewModel
 ) {
+    val onBackPressed = {
+        if (viewModel.imageBitmap.value == null) {
+            viewModel.onEvent(EmotionRecognitionEvent.OnBackPressed)
+        }
+
+        navController.popBackStack()
+    }
+
+    BackHandler {
+        onBackPressed()
+    }
+
     Surface {
         Column {
             BackButton(
-                onClick = { navController.popBackStack() },
+                onClick = { onBackPressed() },
                 modifier = Modifier.padding(
                     top = dimensionResource(id = R.dimen.back_button_layout_padding),
                     start = dimensionResource(id = R.dimen.back_button_layout_padding)
@@ -73,14 +93,14 @@ fun EmotionSelectionFromListScreen(
                     emotionListItems[it] = getEmotionNameString(LocalContext.current, it)
                 }
 
-                val emotion by viewModel.emotion.collectAsStateWithLifecycle()
+                var selectedEmotion by rememberSaveable { mutableStateOf(viewModel.recognizedEmotion.value) }
 
                 val selected: (Any) -> Boolean = {
-                    emotion == it as EmotionName
+                    selectedEmotion == it as EmotionName
                 }
 
                 val onClick: (Any) -> Unit = {
-                    viewModel.emotion.value = it as EmotionName
+                    selectedEmotion = it as EmotionName
                 }
 
                 emotionListItems.onEachIndexed { index, entry ->
@@ -98,11 +118,32 @@ fun EmotionSelectionFromListScreen(
 
                 Spacer(Modifier.height(50.dp))
 
+                val scope = rememberCoroutineScope()
+
                 MyButton(
                     text = stringResource(id = R.string.confirm),
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        viewModel.onEvent(EmotionSelectionFromListEvent.OnEmotionResultConfirmed)
+                        viewModel.recognizedEmotion.value = selectedEmotion
+                        viewModel.onEvent(EmotionRecognitionEvent.OnEmotionResultConfirmed)
+
+                        scope.launch {
+                            viewModel.savedEmotionId.collect {
+                                if (it != null) {
+                                    val emotionIdJson = with(GsonBuilder().create()) {
+                                        toJson(it)
+                                    }
+
+                                    navController.navigate(
+                                        NavigationItem.EmotionAdditionalInfo(
+                                            emotionId = emotionIdJson
+                                        ).route
+                                    ) {
+                                        popUpTo(NavigationItem.Home.route)
+                                    }
+                                }
+                            }
+                        }
                     }
                 )
             }

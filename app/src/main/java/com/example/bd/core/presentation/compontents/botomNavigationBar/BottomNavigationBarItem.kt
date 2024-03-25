@@ -5,7 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.bd.core.presentation.compontents.appNavigation.Screen
+import com.example.bd.core.presentation.compontents.Screen
 import com.example.db.R
 
 sealed class BottomNavigationBarItem(

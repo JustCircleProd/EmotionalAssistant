@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.bd.core.presentation.compontents.appNavigation.NavigationItem
+import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.theme.NavigationBarItemSelectedColor
 import com.example.bd.core.presentation.theme.NavigationBarItemUnselectedColor
 import com.example.bd.core.presentation.theme.White
