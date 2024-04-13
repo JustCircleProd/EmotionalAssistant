@@ -19,7 +19,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -28,21 +27,23 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.botomNavigationBar.BottomNavigationBar
 import com.example.bd.core.presentation.compontents.sharedViewModel
 import com.example.bd.core.presentation.theme.BdTheme
 import com.example.bd.core.presentation.theme.MyRippleTheme
 import com.example.bd.emotionAdditionalInfo.presentation.EmotionAdditionalInfoScreen
+import com.example.bd.emotionDetail.presentation.EmotionDetailScreen
 import com.example.bd.emotionRecognition.presentation.byPhoto.EmotionRecognitionByPhotoScreen
 import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionViewModel
 import com.example.bd.emotionRecognition.presentation.methodSelection.EmotionRecognitionMethodSelectionScreen
 import com.example.bd.emotionRecognition.presentation.selectionFromList.EmotionSelectionFromListScreen
-import com.example.bd.emotionalStateTest.presentation.EmotionalStateTestScreen
+import com.example.bd.emotionalStateTest.presentation.test.EmotionalStateTestScreen
 import com.example.bd.history.presentation.HistoryScreen
 import com.example.bd.home.presentation.HomeScreen
 import com.example.bd.registration.presentation.RegisterScreen
@@ -69,25 +70,10 @@ class MainActivity : ComponentActivity() {
                     LocalRippleTheme provides MyRippleTheme(color = MaterialTheme.colorScheme.primary)
                 ) {
                     val navController = rememberNavController()
-                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val bottomBarVisibilityState = rememberSaveable { (mutableStateOf(true)) }
-
-                    bottomBarVisibilityState.value = when (navBackStackEntry?.destination?.route) {
-                        NavigationItem.Home.route, NavigationItem.History.route -> {
-                            true
-                        }
-
-                        else -> {
-                            false
-                        }
-                    }
 
                     Scaffold(
                         bottomBar = {
-                            BottomNavigationBar(
-                                navController = navController,
-                                bottomBarVisibilityState = bottomBarVisibilityState
-                            )
+                            BottomNavigationBar(navController = navController)
                         }
                     ) {
                         Box(
@@ -109,7 +95,7 @@ class MainActivity : ComponentActivity() {
                                     }
 
                                     launch {
-                                        delay(400)
+                                        delay(500)
                                         isLoading = false
                                     }
                                 }
@@ -143,6 +129,7 @@ fun AppNavHost(
         animatedComposable(NavigationItem.Welcome.route) {
             WelcomeScreen(navController)
         }
+
         animatedComposable(NavigationItem.Register.route) {
             RegisterScreen(navController)
         }
@@ -150,30 +137,104 @@ fun AppNavHost(
         animatedComposable(NavigationItem.Home.route) {
             HomeScreen(navController)
         }
+
         animatedComposable(NavigationItem.History.route) {
             HistoryScreen(navController)
         }
 
-        animatedComposable(NavigationItem.EmotionRecognitionMethodSelection.route) {
-            EmotionRecognitionMethodSelectionScreen(navController)
-        }
-        animatedComposable(NavigationItem.EmotionRecognitionByPhoto.route) {
-            val viewModel = it.sharedViewModel<EmotionRecognitionViewModel>(
-                navController = navController,
-                viewModelOwnerRoute = NavigationItem.EmotionRecognitionMethodSelection.route
+        animatedComposable(
+            NavigationItem.EmotionRecognitionMethodSelection.route,
+            arguments = listOf(
+                navArgument(NavigationItem.EmotionRecognitionMethodSelection.RETURN_ROUTE_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                },
+                navArgument(NavigationItem.EmotionRecognitionMethodSelection.DATE_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                },
+                navArgument(NavigationItem.EmotionRecognitionMethodSelection.EMOTION_ID_TO_UPDATE_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                }
             )
-            EmotionRecognitionByPhotoScreen(navController, viewModel)
-        }
-        animatedComposable(NavigationItem.EmotionSelectionFromList.route) {
-            val viewModel = it.sharedViewModel<EmotionRecognitionViewModel>(
-                navController = navController,
-                viewModelOwnerRoute = NavigationItem.EmotionRecognitionMethodSelection.route
-            )
-            EmotionSelectionFromListScreen(navController, viewModel)
+        ) {
+            val returnRoute =
+                it.arguments?.getString(NavigationItem.EmotionRecognitionMethodSelection.RETURN_ROUTE_ARGUMENT_NAME)
+
+            if (returnRoute != null) {
+                EmotionRecognitionMethodSelectionScreen(navController, returnRoute = returnRoute)
+            }
         }
 
-        animatedComposable(NavigationItem.EmotionAdditionalInfo().route) {
+        animatedComposable(
+            NavigationItem.EmotionRecognitionByPhoto.route,
+            arguments = listOf(
+                navArgument(NavigationItem.EmotionRecognitionByPhoto.RETURN_ROUTE_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            val viewModel = it.sharedViewModel<EmotionRecognitionViewModel>(
+                navController = navController,
+                viewModelOwnerRoute = NavigationItem.EmotionRecognitionMethodSelection.route
+            )
+
+            val returnRoute =
+                it.arguments?.getString(NavigationItem.EmotionRecognitionByPhoto.RETURN_ROUTE_ARGUMENT_NAME)
+
+            if (returnRoute != null) {
+                EmotionRecognitionByPhotoScreen(navController, viewModel, returnRoute)
+            }
+        }
+
+        animatedComposable(
+            NavigationItem.EmotionSelectionFromList.route,
+            arguments = listOf(
+                navArgument(NavigationItem.EmotionSelectionFromList.RETURN_ROUTE_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            val viewModel = it.sharedViewModel<EmotionRecognitionViewModel>(
+                navController = navController,
+                viewModelOwnerRoute = NavigationItem.EmotionRecognitionMethodSelection.route
+            )
+
+            val returnRoute =
+                it.arguments?.getString(NavigationItem.EmotionSelectionFromList.RETURN_ROUTE_ARGUMENT_NAME)
+
+            if (returnRoute != null) {
+                EmotionSelectionFromListScreen(navController, viewModel, returnRoute)
+            }
+        }
+
+        animatedComposable(
+            NavigationItem.EmotionAdditionalInfo.route,
+            arguments = listOf(
+                navArgument(NavigationItem.EmotionAdditionalInfo.EMOTION_ID_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
             EmotionAdditionalInfoScreen(navController)
+        }
+
+        animatedComposable(
+            NavigationItem.EmotionDetail.route,
+            arguments = listOf(
+                navArgument(NavigationItem.EmotionDetail.IN_EDIT_MODE_ARGUMENT_NAME) {
+                    type = NavType.BoolType
+                },
+                navArgument(NavigationItem.EmotionDetail.EMOTION_ID_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            val inEditMode =
+                it.arguments?.getBoolean(NavigationItem.EmotionDetail.IN_EDIT_MODE_ARGUMENT_NAME)
+                    ?: false
+
+            EmotionDetailScreen(navController, inEditMode)
         }
 
         animatedComposable(NavigationItem.EmotionalStateTest.route) {

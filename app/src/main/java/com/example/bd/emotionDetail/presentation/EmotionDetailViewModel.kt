@@ -1,4 +1,4 @@
-package com.example.bd.emotionAdditionalInfo.presentation
+package com.example.bd.emotionDetail.presentation
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -15,15 +15,15 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
-class EmotionAdditionalInfoViewModel @Inject constructor(
+class EmotionDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val emotionRepository: EmotionRepository
 ) : ViewModel() {
 
     private val emotionId = run {
-        if (!savedStateHandle.contains(NavigationItem.EmotionAdditionalInfo.EMOTION_ID_ARGUMENT_NAME)) return@run null
+        if (!savedStateHandle.contains(NavigationItem.EmotionDetail.EMOTION_ID_ARGUMENT_NAME)) return@run null
 
-        savedStateHandle.get<String>(NavigationItem.EmotionAdditionalInfo.EMOTION_ID_ARGUMENT_NAME)
+        savedStateHandle.get<String>(NavigationItem.EmotionDetail.EMOTION_ID_ARGUMENT_NAME)
             ?.let {
                 with(GsonBuilder().create()) {
                     fromJson(it, ObjectId::class.java)
@@ -39,9 +39,9 @@ class EmotionAdditionalInfoViewModel @Inject constructor(
         )
     }
 
-    fun onEvent(event: EmotionAdditionalInfoEvent) {
+    fun onEvent(event: EmotionDetailEvent) {
         when (event) {
-            is EmotionAdditionalInfoEvent.SaveAdditionalInfo -> {
+            is EmotionDetailEvent.OnAdditionalInfoConfirmed -> {
                 updateEmotionDateTimeAndNote(event.dateTime, event.note)
             }
         }
@@ -54,7 +54,7 @@ class EmotionAdditionalInfoViewModel @Inject constructor(
             emotionRepository.update(
                 id = emotionId,
                 newDateTime = newDateTime,
-                newNote = newNote
+                newNote = newNote.ifBlank { null }
             )
         }
     }

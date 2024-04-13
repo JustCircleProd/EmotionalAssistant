@@ -15,6 +15,9 @@ interface EmotionRepository {
 
     suspend fun delete(emotion: Emotion)
 
+    /**
+     * If default values for properties, they will not be changed.
+     */
     suspend fun update(
         id: ObjectId,
         newName: EmotionName? = null,

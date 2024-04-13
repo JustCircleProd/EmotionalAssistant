@@ -43,7 +43,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.bd.core.domain.models.Emotion
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
-import com.example.bd.core.utils.getMonthName
+import com.example.bd.core.presentation.util.getMonthName
 import com.example.db.R
 import com.kizitonwose.calendar.compose.CalendarLayoutInfo
 import com.kizitonwose.calendar.compose.CalendarState

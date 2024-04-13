@@ -28,6 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,8 +38,11 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,21 +56,22 @@ import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
+import com.example.bd.core.presentation.theme.BdTheme
 import com.example.bd.core.presentation.theme.TonalButtonColor
 import com.example.bd.core.presentation.theme.White
-import com.example.bd.core.utils.getEmotionNameString
+import com.example.bd.core.presentation.util.getEmotionNameString
 import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionEvent
 import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionStage
 import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionViewModel
 import com.example.db.R
-import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun EmotionRecognitionByPhotoScreen(
     navController: NavController,
-    viewModel: EmotionRecognitionViewModel
+    viewModel: EmotionRecognitionViewModel,
+    returnRoute: String
 ) {
     val onBackPressed = {
         viewModel.onEvent(EmotionRecognitionEvent.OnBackPressed)
@@ -108,8 +114,8 @@ fun EmotionRecognitionByPhotoScreen(
             BackButton(
                 onClick = { onBackPressed() },
                 modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.back_button_layout_padding),
-                    start = dimensionResource(id = R.dimen.back_button_layout_padding)
+                    top = dimensionResource(id = R.dimen.toolbar_padding),
+                    start = dimensionResource(id = R.dimen.toolbar_padding)
                 )
             )
 
@@ -122,7 +128,7 @@ fun EmotionRecognitionByPhotoScreen(
                     .padding(dimensionResource(id = R.dimen.main_screens_space))
                     .animateContentSize()
             ) {
-                MainText(recognitionStage, recognizedEmotion)
+                TitleText(recognitionStage, recognizedEmotion)
 
                 Spacer(Modifier.height(30.dp))
 
@@ -139,23 +145,24 @@ fun EmotionRecognitionByPhotoScreen(
                 ) {
                     SuccessfulResultButtons(
                         onSelectFromListButtonClicked = {
-                            navController.navigate(NavigationItem.EmotionSelectionFromList.route)
+                            "${NavigationItem.EmotionSelectionFromList}/${returnRoute}"
                         },
                         onConfirmButtonClicked = {
                             viewModel.onEvent(EmotionRecognitionEvent.OnEmotionResultConfirmed)
-                            scope.launch {
-                                viewModel.savedEmotionId.collect {
-                                    if (it != null) {
-                                        val emotionIdJson = with(GsonBuilder().create()) {
-                                            toJson(it)
-                                        }
 
-                                        navController.navigate(
-                                            NavigationItem.EmotionAdditionalInfo(
-                                                emotionId = emotionIdJson
-                                            ).route
-                                        ) {
-                                            popUpTo(NavigationItem.Home.route)
+                            if (viewModel.emotionIdToUpdate != null) {
+                                navController.popBackStack(returnRoute, false)
+                            } else {
+                                scope.launch {
+                                    viewModel.savedEmotionId.collect {
+                                        if (it != null) {
+                                            navController.navigate(
+                                                NavigationItem.EmotionAdditionalInfo.getRouteWithArguments(
+                                                    it
+                                                )
+                                            ) {
+                                                popUpTo(returnRoute)
+                                            }
                                         }
                                     }
                                 }
@@ -182,7 +189,7 @@ fun EmotionRecognitionByPhotoScreen(
 }
 
 @Composable
-private fun MainText(
+private fun TitleText(
     recognitionStage: State<EmotionRecognitionStage>,
     recognizedEmotion: State<EmotionName?>
 ) {
@@ -220,6 +227,7 @@ private fun MainText(
             fontFamily = AlegreyaFontFamily,
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
             color = if (
                 recognitionStage.value == EmotionRecognitionStage.FACE_NOT_DETECTED ||
                 recognitionStage.value == EmotionRecognitionStage.ERROR
@@ -278,5 +286,256 @@ private fun SuccessfulResultButtons(
             modifier = Modifier.fillMaxWidth(),
             onClick = onConfirmButtonClicked
         )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewFaceDetection() {
+    BdTheme {
+        Surface {
+            val recognitionStage =
+                remember { mutableStateOf(EmotionRecognitionStage.FACE_DETECTION) }
+
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_animation_2))
+
+            AnimatedVisibility(
+                visible = recognitionStage.value == EmotionRecognitionStage.FACE_DETECTION &&
+                        recognitionStage.value == EmotionRecognitionStage.EMOTION_CLASSIFICATION,
+                enter = fadeIn(animationSpec = tween(3000)),
+                exit = fadeOut(animationSpec = tween(2000))
+            ) {
+                LottieAnimation(
+                    composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+
+            Column {
+                BackButton(
+                    onClick = { },
+                    modifier = Modifier.padding(
+                        top = dimensionResource(id = R.dimen.toolbar_padding),
+                        start = dimensionResource(id = R.dimen.toolbar_padding)
+                    )
+                )
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                        .animateContentSize()
+                ) {
+                    Text(
+                        text = "Стадия распознавания эмоции",
+                        textAlign = TextAlign.Center,
+                        fontFamily = AlegreyaFontFamily,
+                        fontSize = 26.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (
+                            recognitionStage.value == EmotionRecognitionStage.FACE_NOT_DETECTED ||
+                            recognitionStage.value == EmotionRecognitionStage.ERROR
+                        ) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            White
+                        }
+                    )
+
+                    Spacer(Modifier.height(30.dp))
+
+                    Image(
+                        painter = painterResource(id = R.drawable.image_preview),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(
+                                dimensionResource(id = R.dimen.emotion_image_width),
+                                dimensionResource(id = R.dimen.emotion_image_height)
+                            )
+                            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.emotion_image_rounded_corner_size)))
+                    )
+
+                    Spacer(Modifier.height(50.dp))
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewEmotionClassified() {
+    BdTheme {
+        Surface {
+            val recognitionStage =
+                remember { mutableStateOf(EmotionRecognitionStage.EMOTION_CLASSIFIED) }
+
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_animation_2))
+
+            AnimatedVisibility(
+                visible = recognitionStage.value == EmotionRecognitionStage.FACE_DETECTION &&
+                        recognitionStage.value == EmotionRecognitionStage.EMOTION_CLASSIFICATION,
+                enter = fadeIn(animationSpec = tween(3000)),
+                exit = fadeOut(animationSpec = tween(2000))
+            ) {
+                LottieAnimation(
+                    composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+
+            Column {
+                BackButton(
+                    onClick = { },
+                    modifier = Modifier.padding(
+                        top = dimensionResource(id = R.dimen.toolbar_padding),
+                        start = dimensionResource(id = R.dimen.toolbar_padding)
+                    )
+                )
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                        .animateContentSize()
+                ) {
+                    Text(
+                        text = "Распознанная эмоция",
+                        textAlign = TextAlign.Center,
+                        fontFamily = AlegreyaFontFamily,
+                        fontSize = 26.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (
+                            recognitionStage.value == EmotionRecognitionStage.FACE_NOT_DETECTED ||
+                            recognitionStage.value == EmotionRecognitionStage.ERROR
+                        ) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            White
+                        }
+                    )
+
+                    Spacer(Modifier.height(30.dp))
+
+                    Image(
+                        painter = painterResource(id = R.drawable.image_preview),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(
+                                dimensionResource(id = R.dimen.emotion_image_width),
+                                dimensionResource(id = R.dimen.emotion_image_height)
+                            )
+                            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.emotion_image_rounded_corner_size)))
+                    )
+
+                    Spacer(Modifier.height(50.dp))
+
+                    SuccessfulResultButtons(
+                        onSelectFromListButtonClicked = {
+
+                        },
+                        onConfirmButtonClicked = {
+
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewError() {
+    BdTheme {
+        Surface {
+            val recognitionStage = remember { mutableStateOf(EmotionRecognitionStage.ERROR) }
+
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_animation_2))
+
+            AnimatedVisibility(
+                visible = recognitionStage.value == EmotionRecognitionStage.FACE_DETECTION &&
+                        recognitionStage.value == EmotionRecognitionStage.EMOTION_CLASSIFICATION,
+                enter = fadeIn(animationSpec = tween(3000)),
+                exit = fadeOut(animationSpec = tween(2000))
+            ) {
+                LottieAnimation(
+                    composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+
+            Column {
+                BackButton(
+                    onClick = { },
+                    modifier = Modifier.padding(
+                        top = dimensionResource(id = R.dimen.toolbar_padding),
+                        start = dimensionResource(id = R.dimen.toolbar_padding)
+                    )
+                )
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                        .animateContentSize()
+                ) {
+                    Text(
+                        text = "Ошибка",
+                        textAlign = TextAlign.Center,
+                        fontFamily = AlegreyaFontFamily,
+                        fontSize = 26.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (
+                            recognitionStage.value == EmotionRecognitionStage.FACE_NOT_DETECTED ||
+                            recognitionStage.value == EmotionRecognitionStage.ERROR
+                        ) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            White
+                        }
+                    )
+
+                    Spacer(Modifier.height(30.dp))
+
+                    Image(
+                        painter = painterResource(id = R.drawable.image_preview),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(
+                                dimensionResource(id = R.dimen.emotion_image_width),
+                                dimensionResource(id = R.dimen.emotion_image_height)
+                            )
+                            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.emotion_image_rounded_corner_size)))
+                    )
+
+                    Spacer(Modifier.height(50.dp))
+
+                    MyButton(
+                        text = stringResource(R.string.to_choose_a_method),
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { }
+                    )
+                }
+            }
+        }
     }
 }

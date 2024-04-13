@@ -3,15 +3,18 @@ package com.example.bd.emotionRecognition.presentation.emotionRecognitionViewMod
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bd.core.domain.models.Emotion
 import com.example.bd.core.domain.models.EmotionName
 import com.example.bd.core.domain.repository.EmotionRepository
 import com.example.bd.core.domain.repository.InternalStorageRepository
-import com.example.bd.emotionRecognition.utils.rotateImageIfNeeded
-import com.example.bd.emotionRecognition.utils.toGrayscaleByteBuffer
+import com.example.bd.core.presentation.compontents.NavigationItem
+import com.example.bd.emotionRecognition.presentation.util.rotateImageIfNeeded
+import com.example.bd.emotionRecognition.presentation.util.toGrayscaleByteBuffer
 import com.example.db.ml.Model
+import com.google.gson.GsonBuilder
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
@@ -26,14 +29,17 @@ import org.mongodb.kbson.ObjectId
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.io.IOException
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
 class EmotionRecognitionViewModel @Inject constructor(
     private val emotionRepository: EmotionRepository,
     private val internalStorageRepository: InternalStorageRepository,
-    private val emotionRecognitionModel: Model
+    private val emotionRecognitionModel: Model,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val imageSize = 48
@@ -53,7 +59,33 @@ class EmotionRecognitionViewModel @Inject constructor(
 
     private var imageFileName: String? = null
 
+    // Shows the emotion Id after it is added to the database
     val savedEmotionId = MutableStateFlow<ObjectId?>(null)
+
+    // dateTime is passed if the screen was opened to add emotion for certain date
+    private val dateTime: LocalDateTime = run {
+        if (!savedStateHandle.contains(NavigationItem.EmotionRecognitionMethodSelection.DATE_ARGUMENT_NAME)) {
+            return@run LocalDateTime.now()
+        }
+
+        savedStateHandle.get<String>(NavigationItem.EmotionRecognitionMethodSelection.DATE_ARGUMENT_NAME)
+            ?.let {
+                LocalDate.parse(it).atTime(LocalTime.of(12, 0))
+            } ?: LocalDateTime.now()
+    }
+
+
+    // emotionId is passed if the screen was opened to update the emotion
+    val emotionIdToUpdate = run {
+        if (!savedStateHandle.contains(NavigationItem.EmotionRecognitionMethodSelection.EMOTION_ID_TO_UPDATE_ARGUMENT_NAME)) return@run null
+
+        savedStateHandle.get<String>(NavigationItem.EmotionRecognitionMethodSelection.EMOTION_ID_TO_UPDATE_ARGUMENT_NAME)
+            ?.let {
+                with(GsonBuilder().create()) {
+                    fromJson(it, ObjectId::class.java)
+                }
+            }
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -75,7 +107,11 @@ class EmotionRecognitionViewModel @Inject constructor(
             }
 
             EmotionRecognitionEvent.OnEmotionResultConfirmed -> {
-                saveEmotionResult()
+                if (emotionIdToUpdate != null) {
+                    updateEmotion()
+                } else {
+                    saveEmotion()
+                }
             }
         }
     }
@@ -174,16 +210,28 @@ class EmotionRecognitionViewModel @Inject constructor(
         }
     }
 
-    private fun saveEmotionResult() {
+    private fun saveEmotion() {
         viewModelScope.launch {
             val emotion = Emotion().apply {
                 name = recognizedEmotion.value!!
-                dateTime = LocalDateTime.now()
+                dateTime = this@EmotionRecognitionViewModel.dateTime
                 imageFileName = this@EmotionRecognitionViewModel.imageFileName
             }
 
             emotionRepository.insert(emotion)
-            savedEmotionId.value = emotion._id
+            savedEmotionId.value = emotion.id
+        }
+    }
+
+    private fun updateEmotion() {
+        if (emotionIdToUpdate == null) return
+
+        viewModelScope.launch {
+            emotionRepository.update(
+                id = emotionIdToUpdate,
+                newName = recognizedEmotion.value!!,
+                newImageFileName = this@EmotionRecognitionViewModel.imageFileName
+            )
         }
     }
 }

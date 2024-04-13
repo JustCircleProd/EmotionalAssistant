@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 class Emotion : RealmObject {
     @PrimaryKey
-    var _id: ObjectId = ObjectId()
+    var id: ObjectId = ObjectId()
 
     var name: EmotionName
         get() {

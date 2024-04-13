@@ -2,7 +2,6 @@ package com.example.bd.history.presentation.components
 
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,26 +42,27 @@ import com.example.bd.core.presentation.theme.MyRippleTheme
 import com.example.bd.core.presentation.theme.Red
 import com.example.bd.core.presentation.theme.SubtitleTextColor
 import com.example.bd.core.presentation.theme.White
-import com.example.bd.core.utils.formatLocalTime
-import com.example.bd.core.utils.getEmotionNameString
+import com.example.bd.core.presentation.util.formatLocalTime
+import com.example.bd.core.presentation.util.getEmotionNameString
 import com.example.db.R
 import java.io.File
 
 @Composable
-fun EmotionResultCard(
+fun EmotionCard(
     emotion: Emotion,
-    onClick: () -> Unit,
+    onEditButtonClick: () -> Unit,
     onDeleteButtonClick: () -> Unit,
+    onDetailButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         colors = CardDefaults.cardColors().copy(
             containerColor = BottomSheetCardContainerColor
         ),
+        onClick = { onDetailButtonClick() },
         modifier = modifier
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.calendar_day_card_rounded_corner_size)))
             .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
-            .clickable { }
     ) {
         Box(
             modifier = modifier
@@ -87,9 +87,9 @@ fun EmotionResultCard(
                 EmotionInfo(context, emotion)
 
                 EmotionActionButtons(
-                    onEditButtonClick = {},
+                    onEditButtonClick = onEditButtonClick,
                     onDeleteButtonClick = onDeleteButtonClick,
-                    onClick = onClick
+                    onDetailButtonClick = onDetailButtonClick
                 )
             }
         }
@@ -153,7 +153,7 @@ private fun EmotionInfo(
 private fun EmotionActionButtons(
     onEditButtonClick: () -> Unit,
     onDeleteButtonClick: () -> Unit,
-    onClick: () -> Unit
+    onDetailButtonClick: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -177,7 +177,7 @@ private fun EmotionActionButtons(
 
         MyIconButton(
             imageVector = Icons.Rounded.ArrowBackIosNew,
-            onClick = onClick,
+            onClick = onDetailButtonClick,
             iconModifier = Modifier.rotate(180f)
         )
     }

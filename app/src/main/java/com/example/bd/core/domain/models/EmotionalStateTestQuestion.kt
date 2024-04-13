@@ -7,5 +7,5 @@ import io.realm.kotlin.types.RealmList
 class EmotionalStateTestQuestion : EmbeddedRealmObject {
     var question: String = ""
     var options: RealmList<String> = realmListOf()
-    var points: Int = 0
+    var points: RealmList<Int> = realmListOf()
 }

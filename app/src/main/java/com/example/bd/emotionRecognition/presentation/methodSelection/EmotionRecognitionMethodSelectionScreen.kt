@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
@@ -49,7 +48,7 @@ import com.example.bd.core.presentation.theme.TonalButtonColor
 import com.example.bd.core.presentation.theme.White
 import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionEvent
 import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionViewModel
-import com.example.bd.emotionRecognition.utils.createImageFile
+import com.example.bd.emotionRecognition.presentation.util.createImageFile
 import com.example.db.R
 import kotlinx.coroutines.launch
 
@@ -57,6 +56,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun EmotionRecognitionMethodSelectionScreen(
     navController: NavHostController,
+    returnRoute: String,
     viewModel: EmotionRecognitionViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -66,8 +66,8 @@ fun EmotionRecognitionMethodSelectionScreen(
             BackButton(
                 onClick = { navController.popBackStack() },
                 modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.back_button_layout_padding),
-                    start = dimensionResource(id = R.dimen.back_button_layout_padding)
+                    top = dimensionResource(id = R.dimen.toolbar_padding),
+                    start = dimensionResource(id = R.dimen.toolbar_padding)
                 )
             )
 
@@ -90,23 +90,39 @@ fun EmotionRecognitionMethodSelectionScreen(
 
                 Spacer(Modifier.height(40.dp))
 
-                CameraButton(onPictureTook = {
-                    viewModel.onEvent(EmotionRecognitionEvent.OnUriReady(context, it))
-                    navController.navigate(NavigationItem.EmotionRecognitionByPhoto.route)
-                })
+                CameraButton(
+                    onPictureTook = {
+                        viewModel.onEvent(EmotionRecognitionEvent.OnUriReady(context, it))
+                        navController.navigate(
+                            NavigationItem.EmotionRecognitionByPhoto.getRouteWithArguments(
+                                returnRoute
+                            )
+                        )
+                    }
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                GalleryButton(onImagePicked = {
-                    viewModel.onEvent(EmotionRecognitionEvent.OnUriReady(context, it))
-                    navController.navigate(NavigationItem.EmotionRecognitionByPhoto.route)
-                })
+                GalleryButton(
+                    onImagePicked = {
+                        viewModel.onEvent(EmotionRecognitionEvent.OnUriReady(context, it))
+                        navController.navigate(
+                            NavigationItem.EmotionRecognitionByPhoto.getRouteWithArguments(
+                                returnRoute
+                            )
+                        )
+                    }
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 ListButton(
                     onClick = {
-                        navController.navigate(NavigationItem.EmotionSelectionFromList.route)
+                        navController.navigate(
+                            NavigationItem.EmotionSelectionFromList.getRouteWithArguments(
+                                returnRoute
+                            )
+                        )
                     }
                 )
             }
@@ -202,6 +218,52 @@ private fun ListButton(
 @Composable
 private fun Preview() {
     BdTheme {
-        EmotionRecognitionMethodSelectionScreen(navController = rememberNavController())
+        Column {
+            BackButton(
+                onClick = { },
+                modifier = Modifier.padding(
+                    top = dimensionResource(id = R.dimen.toolbar_padding),
+                    start = dimensionResource(id = R.dimen.toolbar_padding)
+                )
+            )
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.CenterHorizontally)
+                    .verticalScroll(rememberScrollState())
+                    .padding(dimensionResource(id = R.dimen.main_screens_space))
+            ) {
+                Text(
+                    text = stringResource(R.string.choose_a_method),
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = AlegreyaFontFamily,
+                    fontSize = 26.sp,
+                    color = White,
+                )
+
+                Spacer(Modifier.height(40.dp))
+
+                CameraButton(onPictureTook = {
+
+                })
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                GalleryButton(onImagePicked = {
+
+                })
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                ListButton(
+                    onClick = {
+
+                    }
+                )
+            }
+        }
     }
 }

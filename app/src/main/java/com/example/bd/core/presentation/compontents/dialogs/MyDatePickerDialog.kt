@@ -1,4 +1,4 @@
-package com.example.bd.emotionAdditionalInfo.presentation.components
+package com.example.bd.core.presentation.compontents.dialogs
 
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults

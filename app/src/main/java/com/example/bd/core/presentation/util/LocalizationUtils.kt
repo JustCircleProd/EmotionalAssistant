@@ -1,4 +1,4 @@
-package com.example.bd.core.utils
+package com.example.bd.core.presentation.util
 
 import android.content.Context
 import com.example.bd.core.domain.models.EmotionName

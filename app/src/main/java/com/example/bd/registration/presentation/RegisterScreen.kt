@@ -36,16 +36,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.bd.core.domain.models.Gender
-import com.example.bd.core.presentation.compontents.MyTextField
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.MyButton
+import com.example.bd.core.presentation.compontents.textFields.MyTextField
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BdTheme
 import com.example.bd.core.presentation.theme.SubtitleTextColor
 import com.example.bd.core.presentation.theme.White
-import com.example.bd.core.utils.getGenderString
+import com.example.bd.core.presentation.util.getGenderString
 import com.example.bd.registration.domain.validation.UserValidation
 import com.example.bd.registration.presentation.components.MyExposedDropDownMenu
 import com.example.db.R
@@ -66,7 +65,7 @@ fun RegisterScreen(
                     alignment = Alignment.BottomCenter
                 )
                 .verticalScroll(rememberScrollState())
-                .padding(dimensionResource(id = R.dimen.welcome_screens_space))
+                .padding(horizontal = dimensionResource(id = R.dimen.welcome_screens_space))
         ) {
             Image(
                 painter = painterResource(id = R.drawable.icon_emotion),
@@ -261,7 +260,110 @@ private fun GenderExposedDropDownMenu(
 @Composable
 private fun Preview() {
     BdTheme {
-        RegisterScreen(rememberNavController())
+        Surface {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painter = painterResource(id = R.drawable.leaves),
+                        contentScale = ContentScale.FillWidth,
+                        alignment = Alignment.BottomCenter
+                    )
+                    .verticalScroll(rememberScrollState())
+                    .padding(dimensionResource(id = R.dimen.welcome_screens_space))
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.icon_emotion),
+                    contentDescription = stringResource(id = R.string.icon_emotion_content_description),
+                    modifier = Modifier
+                        .size(
+                            dimensionResource(id = R.dimen.register_screen_icon_size),
+                            dimensionResource(id = R.dimen.register_screen_icon_size)
+                        )
+                )
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Text(
+                    text = stringResource(id = R.string.your_data_title),
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = AlegreyaFontFamily,
+                    fontSize = 26.sp,
+                    color = White,
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = stringResource(id = R.string.your_data_text),
+                    fontSize = 19.sp,
+                    fontFamily = AlegreyaFontFamily,
+                    color = SubtitleTextColor,
+                )
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                var name by remember { mutableStateOf("Имя") }
+                var isFirstInteractionWithNameTextField by remember { mutableStateOf(true) }
+
+                NameTextField(
+                    name = name,
+                    isFirstInteraction = isFirstInteractionWithNameTextField,
+                    userValidation = UserValidation,
+                    onValueChanged = {
+                        name = it
+                        isFirstInteractionWithNameTextField = false
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                var age by remember { mutableStateOf("23") }
+                var isFirstInteractionWithAgeTextField by remember { mutableStateOf(true) }
+
+                AgeTextField(
+                    age = age,
+                    isFirstInteraction = isFirstInteractionWithAgeTextField,
+                    userValidation = UserValidation,
+                    onValueChanged = {
+                        age = it
+                        isFirstInteractionWithAgeTextField = false
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                val genders = mutableMapOf<Gender, String>()
+                Gender.entries.forEach {
+                    genders[it] = getGenderString(LocalContext.current, it)
+                }
+
+                var gender by remember { mutableStateOf<Gender?>(Gender.MALE) }
+                var isFirstInteractionWithGenderMenu by remember { mutableStateOf(true) }
+
+                GenderExposedDropDownMenu(
+                    genders = genders,
+                    selectedGender = gender,
+                    onValueChanged = {
+                        gender = it
+                        isFirstInteractionWithGenderMenu = false
+                    },
+                    isFirstInteraction = isFirstInteractionWithGenderMenu,
+                    userValidation = UserValidation
+                )
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                MyButton(
+                    text = stringResource(id = R.string.confirm),
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+
+                    }
+                )
+            }
+        }
     }
 }
 

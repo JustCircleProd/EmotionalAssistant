@@ -7,12 +7,12 @@
 
     <string name="icon_emotion_content_description">Иконка улыбающегося лица</string>
     <string name="welcome_title">Добро пожаловать</string>
-    <string name="welcome_text">Работайте со своими эмоциями, эмоциональным состоянием. Живите здоровую жизнь</string>
+    <string name="welcome_text">Работайте со своими эмоциями и эмоциональными состояниями. Живите здоровой жизнью</string>
     <string name="start">Начать</string>
 
 
     <string name="your_data_title">Ваши данные</string>
-    <string name="your_data_text">Заполните данные о себе. Они могут понадобиться для определения эмоционального состояния</string>
+    <string name="your_data_text">Заполните данные о себе. Они понадобятся для определения эмоционального состояния.</string>
     <string name="name">Имя</string>
     <string name="age">Возраст</string>
     <string name="gender">Пол</string>
@@ -36,9 +36,14 @@
 
     <string name="no_data">Нет данных</string>
 
-
+    <string name="emotion">Эмоция</string>
     <string name="recognize_your_emotion">Определите эмоцию</string>
     <string name="recognize">Определить</string>
+
+    <string name="emotional_state">Эмоциональное состояние</string>
+    <string name="pass_test">Пройдите тест</string>
+    <string name="pass">Пройти</string>
+
 
     <string name="choose_a_method">Выберите метод</string>
     <string name="take_a_picture">Сделать снимок</string>
@@ -58,7 +63,7 @@
     <string name="disgust">Отвращение</string>
     <string name="fear">Страх</string>
     <string name="happiness">Радость</string>
-    <string name="neutral">Нейтральность</string>
+    <string name="neutral">Спокойствие</string>
     <string name="sad">Грусть</string>
     <string name="surprise">Удивление</string>
 
@@ -70,6 +75,8 @@
     <string name="date">Дата</string>
     <string name="time">Время</string>
     <string name="note">Заметка</string>
+
+    <string name="recommendations">Рекомендации</string>
 
 
     <string name="history_of_your_states">История ваших состояний</string>
@@ -86,4 +93,11 @@
     <string name="october">Октябрь</string>
     <string name="november">Ноябрь</string>
     <string name="december">Декабрь</string>
+
+    <string name="add_emotion">Добавить эмоцию</string>
+    <string name="edit">Редактирование</string>
+
+    <string name="edit_emotion">Изменить эмоцию</string>
+    <string name="changes_saved">Изменения сохранены</string>
+
 </resources>

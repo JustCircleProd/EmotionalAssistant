@@ -12,6 +12,7 @@ val TonalButtonColor = Color(0xFF476163)
 val SubtitleTextColor = Color(0xB3FFFFFF)
 
 val UnfocusedTextFieldColor = Color(0xFFBEC2C2)
+val DisabledTextFieldColor = Color(0xFF737575)
 
 val ActionCardContainerColor = Color(0xFFF7F3F0)
 val HomeActionCardButtonContainerColor = Color(0xFF253334)
@@ -26,6 +27,9 @@ val TimePickerDialColor = Color(0xFF334647)
 val PeriodSelectorBorderColor = Color(0xFF7E8080)
 val PeriodSelectorUnselectedContentColor = Color(0xFFADB1B1)
 val TimeSelectorUnselectedContainerColor = Color(0xFF334647)
+
+val SnackbarContainerColor = Color(0xFF476163)
+val SnackbarContentColor = White
 
 
 /*val BackgroundLight = Color(0xFFF5F5F5)

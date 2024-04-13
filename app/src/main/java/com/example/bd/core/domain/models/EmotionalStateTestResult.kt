@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 class EmotionalStateTestResult : RealmObject {
     @PrimaryKey
-    var _id: ObjectId = ObjectId()
+    var id: ObjectId = ObjectId()
     var emotionalStateTest: EmotionalStateTest? = null
     var score: Int = 0
 

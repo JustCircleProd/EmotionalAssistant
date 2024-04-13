@@ -8,7 +8,7 @@ import org.mongodb.kbson.ObjectId
 
 class EmotionalStateTest : RealmObject {
     @PrimaryKey
-    var _id: ObjectId = ObjectId()
+    var id: ObjectId = ObjectId()
 
     var name: EmotionalStateName
         get() {

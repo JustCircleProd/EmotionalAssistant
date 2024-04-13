@@ -1,4 +1,4 @@
-package com.example.bd.emotionRecognition.utils
+package com.example.bd.emotionRecognition.presentation.util
 
 import android.content.Context
 import android.net.Uri

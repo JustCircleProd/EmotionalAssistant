@@ -124,7 +124,7 @@ fun MyExposedDropDownMenu(
                             text = item.value,
                             fontFamily = AlegreyaFontFamily,
                             color = White,
-                            fontSize = 17.sp
+                            fontSize = 16.sp
                         )
                     },
                     onClick = {

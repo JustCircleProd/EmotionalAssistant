@@ -1,4 +1,4 @@
-package com.example.bd.core.presentation.compontents
+package com.example.bd.core.presentation.compontents.textFields
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
+import com.example.bd.core.presentation.theme.DisabledTextFieldColor
 import com.example.bd.core.presentation.theme.UnfocusedTextFieldColor
 import com.example.bd.core.presentation.theme.White
 
@@ -23,14 +24,12 @@ fun MyTextField(
     maxLines: Int = 1,
     isError: Boolean = false,
     errorText: String = "",
-    readOnly: Boolean = false,
     enabled: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions()
 ) {
     TextField(
         value = value,
         onValueChange = onValueChange,
-        readOnly = readOnly,
         enabled = enabled,
         label = {
             Text(
@@ -65,7 +64,7 @@ fun MyTextField(
             disabledContainerColor = Color.Transparent,
             errorContainerColor = Color.Transparent,
             unfocusedIndicatorColor = UnfocusedTextFieldColor,
-            disabledIndicatorColor = UnfocusedTextFieldColor,
+            disabledIndicatorColor = DisabledTextFieldColor,
             unfocusedLabelColor = UnfocusedTextFieldColor,
             focusedLabelColor = White,
             focusedIndicatorColor = White

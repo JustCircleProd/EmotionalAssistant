@@ -8,7 +8,7 @@ import org.mongodb.kbson.ObjectId
 
 class User : RealmObject {
     @PrimaryKey
-    var _id: ObjectId = ObjectId()
+    var id: ObjectId = ObjectId()
     var name: String = ""
     var age: Int = 0
     var gender: Gender

@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -33,18 +34,19 @@ import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
 import com.example.bd.core.presentation.compontents.buttons.OptionButton
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
+import com.example.bd.core.presentation.theme.BdTheme
 import com.example.bd.core.presentation.theme.White
-import com.example.bd.core.utils.getEmotionNameString
+import com.example.bd.core.presentation.util.getEmotionNameString
 import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionEvent
 import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionViewModel
 import com.example.db.R
-import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
 
 @Composable
 fun EmotionSelectionFromListScreen(
     navController: NavHostController,
-    viewModel: EmotionRecognitionViewModel
+    viewModel: EmotionRecognitionViewModel,
+    returnRoute: String
 ) {
     val onBackPressed = {
         if (viewModel.imageBitmap.value == null) {
@@ -63,8 +65,8 @@ fun EmotionSelectionFromListScreen(
             BackButton(
                 onClick = { onBackPressed() },
                 modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.back_button_layout_padding),
-                    start = dimensionResource(id = R.dimen.back_button_layout_padding)
+                    top = dimensionResource(id = R.dimen.toolbar_padding),
+                    start = dimensionResource(id = R.dimen.toolbar_padding)
                 )
             )
 
@@ -127,25 +129,110 @@ fun EmotionSelectionFromListScreen(
                         viewModel.recognizedEmotion.value = selectedEmotion
                         viewModel.onEvent(EmotionRecognitionEvent.OnEmotionResultConfirmed)
 
-                        scope.launch {
-                            viewModel.savedEmotionId.collect {
-                                if (it != null) {
-                                    val emotionIdJson = with(GsonBuilder().create()) {
-                                        toJson(it)
-                                    }
-
-                                    navController.navigate(
-                                        NavigationItem.EmotionAdditionalInfo(
-                                            emotionId = emotionIdJson
-                                        ).route
-                                    ) {
-                                        popUpTo(NavigationItem.Home.route)
+                        if (viewModel.emotionIdToUpdate != null) {
+                            navController.popBackStack(returnRoute, false)
+                        } else {
+                            scope.launch {
+                                viewModel.savedEmotionId.collect {
+                                    if (it != null) {
+                                        navController.navigate(
+                                            NavigationItem.EmotionAdditionalInfo.getRouteWithArguments(
+                                                it
+                                            )
+                                        ) {
+                                            popUpTo(returnRoute)
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    BdTheme {
+        val onBackPressed = {
+
+        }
+
+        BackHandler {
+            onBackPressed()
+        }
+
+        Surface {
+            Column {
+                BackButton(
+                    onClick = { onBackPressed() },
+                    modifier = Modifier.padding(
+                        top = dimensionResource(id = R.dimen.toolbar_padding),
+                        start = dimensionResource(id = R.dimen.toolbar_padding)
+                    )
+                )
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                ) {
+                    Text(
+                        text = stringResource(R.string.select_your_emotion),
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = AlegreyaFontFamily,
+                        fontSize = 26.sp,
+                        color = White,
+                    )
+
+                    Spacer(Modifier.height(40.dp))
+
+                    val emotions = EmotionName.entries
+                    val emotionListItems = mutableMapOf<EmotionName, String>()
+
+                    emotions.forEach {
+                        emotionListItems[it] = getEmotionNameString(LocalContext.current, it)
+                    }
+
+                    var selectedEmotion by rememberSaveable { mutableStateOf(EmotionName.HAPPINESS) }
+
+                    val selected: (Any) -> Boolean = {
+                        selectedEmotion == it as EmotionName
+                    }
+
+                    val onClick: (Any) -> Unit = {
+                        selectedEmotion = it as EmotionName
+                    }
+
+                    emotionListItems.onEachIndexed { index, entry ->
+                        OptionButton(
+                            value = entry.key,
+                            text = entry.value,
+                            selected = selected,
+                            onClick = onClick
+                        )
+
+                        if (index != emotionListItems.size) {
+                            Spacer(Modifier.height(8.dp))
+                        }
+                    }
+
+                    Spacer(Modifier.height(50.dp))
+
+                    MyButton(
+                        text = stringResource(id = R.string.confirm),
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+
+                        }
+                    )
+                }
             }
         }
     }
