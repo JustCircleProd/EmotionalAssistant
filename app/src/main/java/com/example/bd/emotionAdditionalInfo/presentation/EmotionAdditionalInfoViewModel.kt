@@ -7,6 +7,7 @@ import com.example.bd.core.domain.repository.EmotionRepository
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -31,12 +32,16 @@ class EmotionAdditionalInfoViewModel @Inject constructor(
             }
     }
 
-    val emotion = emotionId?.let {
-        emotionRepository.getById(it).stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(),
-            null,
-        )
+    val emotion = run {
+        if (emotionId != null) {
+            emotionRepository.getById(emotionId).stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(),
+                null,
+            )
+        } else {
+            MutableStateFlow(null)
+        }
     }
 
     fun onEvent(event: EmotionAdditionalInfoEvent) {

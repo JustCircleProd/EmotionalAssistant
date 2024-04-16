@@ -1,4 +1,4 @@
-package com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel
+package com.example.bd.emotionRecognition.presentation.viewModel
 
 enum class EmotionRecognitionStage {
     FACE_DETECTION,

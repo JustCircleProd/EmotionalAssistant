@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.bd.core.presentation.compontents.ErrorLayout
+import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.MyButton
 import com.example.bd.core.presentation.compontents.textFields.emotionAdditionalInfo.DateTextField
 import com.example.bd.core.presentation.compontents.textFields.emotionAdditionalInfo.NoteTextField
@@ -41,91 +43,106 @@ import java.time.LocalDateTime
 @Composable
 fun EmotionAdditionalInfoScreen(
     navController: NavController,
+    returnRoute: String?,
     viewModel: EmotionAdditionalInfoViewModel = hiltViewModel()
 ) {
     Surface {
-        val emotion = viewModel.emotion?.collectAsStateWithLifecycle(null)
+        val emotion by viewModel.emotion.collectAsStateWithLifecycle(null)
 
-        if (emotion?.value != null) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(dimensionResource(id = R.dimen.main_screens_space))
-                    .animateContentSize()
-            ) {
-                Text(
-                    text = stringResource(R.string.emotion_added),
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = AlegreyaFontFamily,
-                    fontSize = 26.sp,
-                    color = White,
-                )
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Text(
-                    text = stringResource(R.string.would_you_like_to_add_additional_info),
-                    fontSize = 19.sp,
-                    fontFamily = AlegreyaFontFamily,
-                    color = SubtitleTextColor,
-                )
-
-                Spacer(modifier = Modifier.height(50.dp))
-
-                var dateTime by remember {
-                    mutableStateOf(
-                        emotion.value!!.dateTime
-                    )
+        if (emotion == null || returnRoute == null) {
+            ErrorLayout(
+                onBackButtonClick = {
+                    navController.popBackStack()
                 }
+            )
+            return@Surface
+        }
 
-                DateTextField(
-                    date = dateTime,
-                    onValueChange = {
-                        dateTime = it.atTime(dateTime.toLocalTime())
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(dimensionResource(id = R.dimen.main_screens_space))
+                .animateContentSize()
+        ) {
+            Text(
+                text = stringResource(R.string.emotion_added),
+                fontWeight = FontWeight.Bold,
+                fontFamily = AlegreyaFontFamily,
+                fontSize = 26.sp,
+                color = White,
+            )
 
-                Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
-                TimeTextField(
-                    time = dateTime.toLocalTime(),
-                    onValueChange = {
-                        dateTime = dateTime.withHour(it.hour).withMinute(it.minute)
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+            Text(
+                text = stringResource(R.string.would_you_like_to_add_additional_info),
+                fontSize = 19.sp,
+                fontFamily = AlegreyaFontFamily,
+                color = SubtitleTextColor,
+            )
 
-                Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
-                var note by remember { mutableStateOf("") }
-
-                NoteTextField(
-                    note = note,
-                    onValueChange = {
-                        note = it
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(40.dp))
-
-                MyButton(
-                    text = stringResource(id = R.string.confirm),
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        viewModel.onEvent(
-                            EmotionAdditionalInfoEvent.SaveAdditionalInfo(
-                                dateTime,
-                                note
-                            )
-                        )
-                        navController.popBackStack()
-                    }
+            var dateTime by remember {
+                mutableStateOf(
+                    emotion!!.dateTime
                 )
             }
+
+            DateTextField(
+                date = dateTime,
+                onValueChange = {
+                    dateTime = it.atTime(dateTime.toLocalTime())
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            TimeTextField(
+                time = dateTime.toLocalTime(),
+                onValueChange = {
+                    dateTime = dateTime.withHour(it.hour).withMinute(it.minute)
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            var note by remember { mutableStateOf("") }
+
+            NoteTextField(
+                note = note,
+                onValueChange = {
+                    note = it
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            MyButton(
+                text = stringResource(id = R.string.confirm),
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    viewModel.onEvent(
+                        EmotionAdditionalInfoEvent.SaveAdditionalInfo(
+                            dateTime,
+                            note
+                        )
+                    )
+
+                    navController.navigate(
+                        NavigationItem.EmotionRecommendation.getRouteWithArguments(
+                            emotion!!.id
+                        )
+                    ) {
+                        popUpTo(returnRoute)
+                    }
+                }
+            )
         }
     }
 }

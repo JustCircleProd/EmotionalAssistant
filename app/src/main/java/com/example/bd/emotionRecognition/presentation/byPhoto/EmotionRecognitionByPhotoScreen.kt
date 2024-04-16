@@ -52,6 +52,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.bd.core.domain.models.EmotionName
+import com.example.bd.core.presentation.compontents.ErrorLayout
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
@@ -60,9 +61,9 @@ import com.example.bd.core.presentation.theme.BdTheme
 import com.example.bd.core.presentation.theme.TonalButtonColor
 import com.example.bd.core.presentation.theme.White
 import com.example.bd.core.presentation.util.getEmotionNameString
-import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionEvent
-import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionStage
-import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionViewModel
+import com.example.bd.emotionRecognition.presentation.viewModel.EmotionRecognitionEvent
+import com.example.bd.emotionRecognition.presentation.viewModel.EmotionRecognitionStage
+import com.example.bd.emotionRecognition.presentation.viewModel.EmotionRecognitionViewModel
 import com.example.db.R
 import kotlinx.coroutines.launch
 
@@ -71,7 +72,7 @@ import kotlinx.coroutines.launch
 fun EmotionRecognitionByPhotoScreen(
     navController: NavController,
     viewModel: EmotionRecognitionViewModel,
-    returnRoute: String
+    returnRoute: String?
 ) {
     val onBackPressed = {
         viewModel.onEvent(EmotionRecognitionEvent.OnBackPressed)
@@ -89,6 +90,15 @@ fun EmotionRecognitionByPhotoScreen(
     }
 
     Surface {
+        if (returnRoute == null) {
+            ErrorLayout(
+                onBackButtonClick = {
+                    onBackPressed()
+                }
+            )
+            return@Surface
+        }
+
         val recognizedEmotion = viewModel.recognizedEmotion.collectAsStateWithLifecycle()
         val imageBitmap = viewModel.imageBitmap.collectAsStateWithLifecycle()
 
@@ -158,6 +168,7 @@ fun EmotionRecognitionByPhotoScreen(
                                         if (it != null) {
                                             navController.navigate(
                                                 NavigationItem.EmotionAdditionalInfo.getRouteWithArguments(
+                                                    returnRoute,
                                                     it
                                                 )
                                             ) {
@@ -211,7 +222,7 @@ private fun TitleText(
         }
 
         EmotionRecognitionStage.ERROR -> {
-            stringResource(R.string.recognition_error_try_again)
+            stringResource(R.string.recognition_error)
         }
     }
 

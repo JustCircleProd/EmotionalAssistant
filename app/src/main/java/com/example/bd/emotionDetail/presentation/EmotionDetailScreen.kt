@@ -1,6 +1,5 @@
 package com.example.bd.emotionDetail.presentation
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,8 +46,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import com.example.bd.core.presentation.compontents.EmotionImage
+import com.example.bd.core.presentation.compontents.ErrorLayout
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
@@ -65,7 +64,6 @@ import com.example.bd.core.presentation.theme.White
 import com.example.bd.core.presentation.util.getEmotionNameString
 import com.example.db.R
 import kotlinx.coroutines.launch
-import java.io.File
 import java.time.LocalDateTime
 
 @Composable
@@ -75,225 +73,218 @@ fun EmotionDetailScreen(
     viewModel: EmotionDetailViewModel = hiltViewModel()
 ) {
     Surface {
-        val emotion = viewModel.emotion?.collectAsStateWithLifecycle(null)
-        val emotionValue = emotion?.value
+        val emotion by viewModel.emotion.collectAsStateWithLifecycle(null)
 
-        if (emotionValue != null) {
-            var inEditModeState by rememberSaveable {
-                mutableStateOf(inEditMode)
-            }
+        if (emotion == null) {
+            ErrorLayout(
+                onBackButtonClick = {
+                    navController.popBackStack()
+                }
+            )
+            return@Surface
+        }
 
-            val snackbarHostState = remember { SnackbarHostState() }
-            val scope = rememberCoroutineScope()
+        var inEditModeState by rememberSaveable {
+            mutableStateOf(inEditMode)
+        }
 
-            Scaffold(
-                snackbarHost = {
-                    SnackbarHost(
-                        hostState = snackbarHostState
-                    ) { data ->
-                        Snackbar(
-                            containerColor = SnackbarContainerColor,
-                            contentColor = SnackbarContentColor,
-                            actionContentColor = MaterialTheme.colorScheme.secondary,
-                            action = {
-                                Text(
-                                    text = data.visuals.actionLabel?.uppercase() ?: "",
-                                    fontFamily = AlegreyaFontFamily,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 16.sp
-                                )
-                            },
-                            modifier = Modifier.padding(dimensionResource(id = R.dimen.main_screens_space))
-                        ) {
+        val snackbarHostState = remember { SnackbarHostState() }
+        val scope = rememberCoroutineScope()
+
+        Scaffold(
+            snackbarHost = {
+                SnackbarHost(
+                    hostState = snackbarHostState
+                ) { data ->
+                    Snackbar(
+                        containerColor = SnackbarContainerColor,
+                        contentColor = SnackbarContentColor,
+                        actionContentColor = MaterialTheme.colorScheme.secondary,
+                        action = {
                             Text(
-                                text = data.visuals.message,
+                                text = data.visuals.actionLabel?.uppercase() ?: "",
                                 fontFamily = AlegreyaFontFamily,
-                                fontSize = 15.sp
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 16.sp
                             )
-                        }
+                        },
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.main_screens_space))
+                    ) {
+                        Text(
+                            text = data.visuals.message,
+                            fontFamily = AlegreyaFontFamily,
+                            fontSize = 15.sp
+                        )
                     }
                 }
-            ) { innerPadding ->
-                Column(Modifier.padding(innerPadding)) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = dimensionResource(id = R.dimen.toolbar_padding))
-                            .padding(horizontal = dimensionResource(id = R.dimen.toolbar_padding))
-                    ) {
-                        BackButton(
-                            onClick = { navController.popBackStack() },
-                        )
+            }
+        ) { innerPadding ->
+            Column(Modifier.padding(innerPadding)) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = dimensionResource(id = R.dimen.toolbar_padding))
+                        .padding(horizontal = dimensionResource(id = R.dimen.toolbar_padding))
+                ) {
+                    BackButton(
+                        onClick = { navController.popBackStack() },
+                    )
 
-                        if (inEditModeState) {
-                            Text(
-                                text = stringResource(R.string.edit),
-                                fontWeight = FontWeight.Medium,
-                                fontFamily = AlegreyaFontFamily,
-                                fontSize = 21.sp,
-                                color = White,
-                            )
-                        }
-
-                        MyIconButton(
-                            imageVector = Icons.Rounded.ModeEdit,
-                            contentDescription = stringResource(R.string.edit),
-                            iconTintColor = if (inEditModeState) MaterialTheme.colorScheme.primary else White,
-                            onClick = {
-                                inEditModeState = !inEditModeState
-                            }
+                    if (inEditModeState) {
+                        Text(
+                            text = stringResource(R.string.edit),
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = AlegreyaFontFamily,
+                            fontSize = 21.sp,
+                            color = White,
                         )
                     }
 
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .padding(dimensionResource(id = R.dimen.main_screens_space))
+                    MyIconButton(
+                        imageVector = Icons.Rounded.ModeEdit,
+                        contentDescription = stringResource(R.string.edit),
+                        iconTintColor = if (inEditModeState) MaterialTheme.colorScheme.primary else White,
+                        onClick = {
+                            inEditModeState = !inEditModeState
+                        }
+                    )
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                ) {
+                    val context = LocalContext.current
+
+                    val emotionImageFileName = emotion!!.imageFileName
+
+                    if (emotionImageFileName != null) {
+                        EmotionImage(context, emotionImageFileName)
+                    }
+
+                    Spacer(Modifier.height(10.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val context = LocalContext.current
-
-                        val emotionImageFileName = emotionValue.imageFileName
-
-                        if (emotionImageFileName != null) {
-                            EmotionImage(context, emotionImageFileName)
-                        }
-
-                        Spacer(Modifier.height(6.dp))
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = getEmotionNameString(
-                                    context,
-                                    emotionValue.name
-                                ),
-                                fontWeight = FontWeight.SemiBold,
-                                fontFamily = AlegreyaFontFamily,
-                                fontSize = 24.sp,
-                                color = White,
-                            )
-
-                            if (inEditModeState) {
-                                MyIconButton(
-                                    imageVector = Icons.Rounded.Edit,
-                                    contentDescription = stringResource(R.string.edit_emotion),
-                                    onClick = {
-                                        navController.navigate(
-                                            NavigationItem.EmotionRecognitionMethodSelection.getRouteWithArguments(
-                                                returnRoute = NavigationItem.EmotionDetail.getRouteWithArguments(
-                                                    emotionValue.id
-                                                ),
-                                                emotionId = emotionValue.id
-                                            )
-                                        )
-                                    }
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        var dateTime by remember {
-                            mutableStateOf(
-                                emotionValue.dateTime
-                            )
-                        }
-
-                        DateTextField(
-                            date = dateTime,
-                            onValueChange = {
-                                dateTime = it.atTime(dateTime.toLocalTime())
-                            },
-                            clickable = inEditModeState,
-                            modifier = Modifier.fillMaxWidth()
+                        Text(
+                            text = getEmotionNameString(
+                                context,
+                                emotion!!.name
+                            ),
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = AlegreyaFontFamily,
+                            fontSize = 24.sp,
+                            color = White,
                         )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        TimeTextField(
-                            time = dateTime.toLocalTime(),
-                            onValueChange = {
-                                dateTime = dateTime.withHour(it.hour).withMinute(it.minute)
-                            },
-                            clickable = inEditModeState,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        var note by remember { mutableStateOf(emotionValue.note ?: "") }
-
-                        NoteTextField(
-                            note = note,
-                            onValueChange = {
-                                note = it
-                            },
-                            enabled = inEditModeState,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(Modifier.height(40.dp))
 
                         if (inEditModeState) {
-                            MyButton(
-                                text = stringResource(id = R.string.confirm),
-                                modifier = Modifier.fillMaxWidth(),
+                            MyIconButton(
+                                imageVector = Icons.Rounded.Edit,
+                                contentDescription = stringResource(R.string.edit_emotion),
                                 onClick = {
-                                    viewModel.onEvent(
-                                        EmotionDetailEvent.OnAdditionalInfoConfirmed(
-                                            dateTime = dateTime,
-                                            note = note
+                                    navController.navigate(
+                                        NavigationItem.EmotionRecognitionMethodSelection.getRouteWithArguments(
+                                            returnRoute = NavigationItem.EmotionDetail.getRouteWithArguments(
+                                                emotion!!.id
+                                            ),
+                                            emotionId = emotion!!.id
                                         )
                                     )
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar(
-                                            context.getString(R.string.changes_saved),
-                                            duration = SnackbarDuration.Short
-                                        )
-                                    }
-                                    inEditModeState = false
-                                }
-                            )
-                        } else {
-                            MyButton(
-                                text = stringResource(id = R.string.recommendations),
-                                containerColor = TonalButtonColor,
-                                modifier = Modifier.fillMaxWidth(),
-                                onClick = {
-
                                 }
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    var dateTime by remember {
+                        mutableStateOf(
+                            emotion!!.dateTime
+                        )
+                    }
+
+                    DateTextField(
+                        date = dateTime,
+                        onValueChange = {
+                            dateTime = it.atTime(dateTime.toLocalTime())
+                        },
+                        clickable = inEditModeState,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    TimeTextField(
+                        time = dateTime.toLocalTime(),
+                        onValueChange = {
+                            dateTime = dateTime.withHour(it.hour).withMinute(it.minute)
+                        },
+                        clickable = inEditModeState,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    var note by remember { mutableStateOf(emotion!!.note ?: "") }
+
+                    NoteTextField(
+                        note = note,
+                        onValueChange = {
+                            note = it
+                        },
+                        enabled = inEditModeState,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(Modifier.height(40.dp))
+
+                    if (inEditModeState) {
+                        MyButton(
+                            text = stringResource(id = R.string.confirm),
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                viewModel.onEvent(
+                                    EmotionDetailEvent.OnAdditionalInfoConfirmed(
+                                        dateTime = dateTime,
+                                        note = note
+                                    )
+                                )
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        context.getString(R.string.changes_saved),
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                                inEditModeState = false
+                            }
+                        )
+                    } else {
+                        MyButton(
+                            text = stringResource(id = R.string.recommendations),
+                            containerColor = TonalButtonColor,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                navController.navigate(
+                                    NavigationItem.EmotionRecommendation.getRouteWithArguments(
+                                        emotion!!.id
+                                    )
+                                )
+                            }
+                        )
+                    }
+
+                    Spacer(Modifier.height(70.dp))
                 }
             }
         }
     }
-}
-
-
-@Composable
-private fun EmotionImage(context: Context, emotionImageFileName: String) {
-    val imagePath =
-        File(context.filesDir, emotionImageFileName)
-
-    AsyncImage(
-        model = ImageRequest.Builder(context)
-            .data(imagePath)
-            .crossfade(true)
-            .build(),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .size(225.dp, 300.dp)
-            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.emotion_image_rounded_corner_size)))
-    )
 }
 
 @Preview
@@ -438,6 +429,8 @@ private fun Preview() {
                             }
                         )
                     }
+
+                    Spacer(Modifier.height(50.dp))
                 }
             }
         }

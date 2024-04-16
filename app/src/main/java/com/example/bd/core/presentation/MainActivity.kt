@@ -40,9 +40,10 @@ import com.example.bd.core.presentation.theme.MyRippleTheme
 import com.example.bd.emotionAdditionalInfo.presentation.EmotionAdditionalInfoScreen
 import com.example.bd.emotionDetail.presentation.EmotionDetailScreen
 import com.example.bd.emotionRecognition.presentation.byPhoto.EmotionRecognitionByPhotoScreen
-import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionViewModel
 import com.example.bd.emotionRecognition.presentation.methodSelection.EmotionRecognitionMethodSelectionScreen
 import com.example.bd.emotionRecognition.presentation.selectionFromList.EmotionSelectionFromListScreen
+import com.example.bd.emotionRecognition.presentation.viewModel.EmotionRecognitionViewModel
+import com.example.bd.emotionRecommendation.presentation.EmotionRecommendationScreen
 import com.example.bd.emotionalStateTest.presentation.test.EmotionalStateTestScreen
 import com.example.bd.history.presentation.HistoryScreen
 import com.example.bd.home.presentation.HomeScreen
@@ -161,9 +162,7 @@ fun AppNavHost(
             val returnRoute =
                 it.arguments?.getString(NavigationItem.EmotionRecognitionMethodSelection.RETURN_ROUTE_ARGUMENT_NAME)
 
-            if (returnRoute != null) {
-                EmotionRecognitionMethodSelectionScreen(navController, returnRoute = returnRoute)
-            }
+            EmotionRecognitionMethodSelectionScreen(navController, returnRoute)
         }
 
         animatedComposable(
@@ -182,9 +181,7 @@ fun AppNavHost(
             val returnRoute =
                 it.arguments?.getString(NavigationItem.EmotionRecognitionByPhoto.RETURN_ROUTE_ARGUMENT_NAME)
 
-            if (returnRoute != null) {
-                EmotionRecognitionByPhotoScreen(navController, viewModel, returnRoute)
-            }
+            EmotionRecognitionByPhotoScreen(navController, viewModel, returnRoute)
         }
 
         animatedComposable(
@@ -203,20 +200,36 @@ fun AppNavHost(
             val returnRoute =
                 it.arguments?.getString(NavigationItem.EmotionSelectionFromList.RETURN_ROUTE_ARGUMENT_NAME)
 
-            if (returnRoute != null) {
-                EmotionSelectionFromListScreen(navController, viewModel, returnRoute)
-            }
+            EmotionSelectionFromListScreen(navController, viewModel, returnRoute)
         }
 
         animatedComposable(
             NavigationItem.EmotionAdditionalInfo.route,
             arguments = listOf(
+                navArgument(NavigationItem.EmotionAdditionalInfo.RETURN_ROUTE_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                },
                 navArgument(NavigationItem.EmotionAdditionalInfo.EMOTION_ID_ARGUMENT_NAME) {
                     type = NavType.StringType
                 }
             )
         ) {
-            EmotionAdditionalInfoScreen(navController)
+            val returnRoute =
+                it.arguments?.getString(NavigationItem.EmotionSelectionFromList.RETURN_ROUTE_ARGUMENT_NAME)
+
+
+            EmotionAdditionalInfoScreen(navController, returnRoute)
+        }
+
+        animatedComposable(
+            NavigationItem.EmotionRecommendation.route,
+            arguments = listOf(
+                navArgument(NavigationItem.EmotionRecommendation.EMOTION_ID_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            EmotionRecommendationScreen(navController)
         }
 
         animatedComposable(

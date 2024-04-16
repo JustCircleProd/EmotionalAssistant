@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.bd.core.presentation.compontents.ErrorLayout
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
@@ -46,9 +47,9 @@ import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BdTheme
 import com.example.bd.core.presentation.theme.TonalButtonColor
 import com.example.bd.core.presentation.theme.White
-import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionEvent
-import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionViewModel
 import com.example.bd.emotionRecognition.presentation.util.createImageFile
+import com.example.bd.emotionRecognition.presentation.viewModel.EmotionRecognitionEvent
+import com.example.bd.emotionRecognition.presentation.viewModel.EmotionRecognitionViewModel
 import com.example.db.R
 import kotlinx.coroutines.launch
 
@@ -56,12 +57,21 @@ import kotlinx.coroutines.launch
 @Composable
 fun EmotionRecognitionMethodSelectionScreen(
     navController: NavHostController,
-    returnRoute: String,
+    returnRoute: String?,
     viewModel: EmotionRecognitionViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
 
     Surface {
+        if (returnRoute == null) {
+            ErrorLayout(
+                onBackButtonClick = {
+                    navController.popBackStack()
+                }
+            )
+            return@Surface
+        }
+
         Column {
             BackButton(
                 onClick = { navController.popBackStack() },

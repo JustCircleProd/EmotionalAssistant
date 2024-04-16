@@ -39,7 +39,7 @@ class EmotionRepositoryImpl @Inject constructor(private val realm: Realm) :
 
     override fun getById(id: ObjectId): Flow<Emotion?> {
         return realm
-            .query<Emotion>("_id == $0", id)
+            .query<Emotion>("id == $0", id)
             .find()
             .first()
             .asFlow()
@@ -63,7 +63,7 @@ class EmotionRepositoryImpl @Inject constructor(private val realm: Realm) :
     ) {
         withContext(Dispatchers.IO) {
             val emotion = realm
-                .query<Emotion>("_id == $0", id)
+                .query<Emotion>("id == $0", id)
                 .find()
                 .first()
 

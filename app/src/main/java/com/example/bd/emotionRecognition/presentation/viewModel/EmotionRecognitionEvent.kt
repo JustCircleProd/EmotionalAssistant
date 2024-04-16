@@ -1,4 +1,4 @@
-package com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel
+package com.example.bd.emotionRecognition.presentation.viewModel
 
 import android.content.Context
 import android.net.Uri

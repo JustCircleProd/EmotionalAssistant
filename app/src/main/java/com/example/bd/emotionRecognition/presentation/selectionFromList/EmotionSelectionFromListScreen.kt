@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.bd.core.domain.models.EmotionName
+import com.example.bd.core.presentation.compontents.ErrorLayout
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
@@ -37,8 +38,8 @@ import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BdTheme
 import com.example.bd.core.presentation.theme.White
 import com.example.bd.core.presentation.util.getEmotionNameString
-import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionEvent
-import com.example.bd.emotionRecognition.presentation.emotionRecognitionViewModel.EmotionRecognitionViewModel
+import com.example.bd.emotionRecognition.presentation.viewModel.EmotionRecognitionEvent
+import com.example.bd.emotionRecognition.presentation.viewModel.EmotionRecognitionViewModel
 import com.example.db.R
 import kotlinx.coroutines.launch
 
@@ -46,7 +47,7 @@ import kotlinx.coroutines.launch
 fun EmotionSelectionFromListScreen(
     navController: NavHostController,
     viewModel: EmotionRecognitionViewModel,
-    returnRoute: String
+    returnRoute: String?
 ) {
     val onBackPressed = {
         if (viewModel.imageBitmap.value == null) {
@@ -61,6 +62,15 @@ fun EmotionSelectionFromListScreen(
     }
 
     Surface {
+        if (returnRoute == null) {
+            ErrorLayout(
+                onBackButtonClick = {
+                    onBackPressed()
+                }
+            )
+            return@Surface
+        }
+
         Column {
             BackButton(
                 onClick = { onBackPressed() },
@@ -137,6 +147,7 @@ fun EmotionSelectionFromListScreen(
                                     if (it != null) {
                                         navController.navigate(
                                             NavigationItem.EmotionAdditionalInfo.getRouteWithArguments(
+                                                returnRoute,
                                                 it
                                             )
                                         ) {

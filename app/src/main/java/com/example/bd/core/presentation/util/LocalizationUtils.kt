@@ -19,7 +19,7 @@ fun getEmotionNameString(context: Context, emotionName: EmotionName?): String {
         EmotionName.FEAR -> context.getString(R.string.fear)
         EmotionName.HAPPINESS -> context.getString(R.string.happiness)
         EmotionName.NEUTRAL -> context.getString(R.string.neutral)
-        EmotionName.SAD -> context.getString(R.string.sad)
+        EmotionName.SADNESS -> context.getString(R.string.sadness)
         EmotionName.SURPRISE -> context.getString(R.string.surprise)
         else -> context.getString(R.string.neutral)
     }

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.bd.core.presentation.compontents.ErrorLayout
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BdTheme
@@ -35,7 +36,14 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
     val user by viewModel.user.collectAsStateWithLifecycle(initialValue = null)
 
     Surface {
-        if (user == null) return@Surface
+        if (user == null) {
+            ErrorLayout(
+                onBackButtonClick = {
+                    navController.popBackStack()
+                }
+            )
+            return@Surface
+        }
 
         Column(
             modifier = Modifier

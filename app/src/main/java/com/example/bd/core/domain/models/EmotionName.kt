@@ -6,6 +6,6 @@ enum class EmotionName {
     FEAR,
     HAPPINESS,
     NEUTRAL,
-    SAD,
+    SADNESS,
     SURPRISE
 }

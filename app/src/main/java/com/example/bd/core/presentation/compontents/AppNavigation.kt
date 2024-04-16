@@ -15,6 +15,7 @@ enum class Screen {
     EMOTION_RECOGNITION_BY_PHOTO,
     EMOTION_SELECTION_FROM_LIST,
     EMOTION_ADDITIONAL_INFO,
+    EMOTION_RECOMMENDATION,
     EMOTION_DETAIL,
     EMOTIONAL_STATE_TEST
 }
@@ -97,7 +98,33 @@ sealed class NavigationItem(val route: String) {
     }
 
     data object EmotionAdditionalInfo : NavigationItem(
-        "${Screen.EMOTION_ADDITIONAL_INFO.name}/{emotionId}"
+        "${Screen.EMOTION_ADDITIONAL_INFO.name}/{returnRoute}/{emotionId}"
+    ) {
+        const val RETURN_ROUTE_ARGUMENT_NAME = "returnRoute"
+        const val EMOTION_ID_ARGUMENT_NAME = "emotionId"
+
+        fun getRouteWithArguments(returnRoute: String, emotionId: ObjectId): String {
+            var routeWithArguments = Screen.EMOTION_ADDITIONAL_INFO.name
+
+            routeWithArguments += "/${
+                URLEncoder.encode(
+                    returnRoute,
+                    StandardCharsets.UTF_8.toString()
+                )
+            }"
+
+            val emotionIdJson = with(GsonBuilder().create()) {
+                toJson(emotionId)
+            }
+
+            routeWithArguments += "/$emotionIdJson"
+
+            return routeWithArguments
+        }
+    }
+
+    data object EmotionRecommendation : NavigationItem(
+        "${Screen.EMOTION_RECOMMENDATION.name}/{emotionId}"
     ) {
         const val EMOTION_ID_ARGUMENT_NAME = "emotionId"
 
@@ -106,7 +133,7 @@ sealed class NavigationItem(val route: String) {
                 toJson(emotionId)
             }
 
-            return "${Screen.EMOTION_ADDITIONAL_INFO.name}/$emotionIdJson"
+            return "${Screen.EMOTION_RECOMMENDATION.name}/$emotionIdJson"
         }
     }
 
