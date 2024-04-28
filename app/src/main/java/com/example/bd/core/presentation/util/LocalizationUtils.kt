@@ -2,15 +2,8 @@ package com.example.bd.core.presentation.util
 
 import android.content.Context
 import com.example.bd.core.domain.models.EmotionName
-import com.example.bd.core.domain.models.Gender
+import com.example.bd.core.domain.models.EmotionalStateName
 import com.example.db.R
-
-fun getGenderString(context: Context, gender: Gender): String {
-    return when (gender) {
-        Gender.MALE -> context.getString(R.string.male_gender)
-        Gender.FEMALE -> context.getString(R.string.female_gender)
-    }
-}
 
 fun getEmotionNameString(context: Context, emotionName: EmotionName?): String {
     return when (emotionName) {
@@ -22,6 +15,17 @@ fun getEmotionNameString(context: Context, emotionName: EmotionName?): String {
         EmotionName.SADNESS -> context.getString(R.string.sadness)
         EmotionName.SURPRISE -> context.getString(R.string.surprise)
         else -> context.getString(R.string.neutral)
+    }
+}
+
+fun getEmotionalStateNameString(context: Context, emotionalStateName: EmotionalStateName?): String {
+    return when (emotionalStateName) {
+        EmotionalStateName.DEPRESSION -> context.getString(R.string.depression)
+        EmotionalStateName.NEUROSIS -> context.getString(R.string.neurosis)
+        EmotionalStateName.SOCIAL_PHOBIA -> context.getString(R.string.social_phobia)
+        EmotionalStateName.ASTHENIA -> context.getString(R.string.asthenia)
+        EmotionalStateName.INSOMNIA -> context.getString(R.string.insomnia)
+        else -> context.getString(R.string.depression)
     }
 }
 

@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.bd.core.presentation.compontents.ErrorLayout
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
@@ -63,23 +63,13 @@ fun EmotionRecognitionMethodSelectionScreen(
     val context = LocalContext.current
 
     Surface {
-        if (returnRoute == null) {
-            ErrorLayout(
-                onBackButtonClick = {
-                    navController.popBackStack()
-                }
-            )
-            return@Surface
-        }
-
         Column {
             BackButton(
                 onClick = { navController.popBackStack() },
-                modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.toolbar_padding),
-                    start = dimensionResource(id = R.dimen.toolbar_padding)
-                )
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.toolbar_padding))
             )
+
+            if (returnRoute == null) return@Surface
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -88,8 +78,11 @@ fun EmotionRecognitionMethodSelectionScreen(
                     .fillMaxSize()
                     .align(Alignment.CenterHorizontally)
                     .verticalScroll(rememberScrollState())
-                    .padding(dimensionResource(id = R.dimen.main_screens_space))
+                    .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                    .animateContentSize()
             ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                 Text(
                     text = stringResource(R.string.choose_a_method),
                     fontWeight = FontWeight.Bold,
@@ -135,6 +128,8 @@ fun EmotionRecognitionMethodSelectionScreen(
                         )
                     }
                 )
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
             }
         }
     }
@@ -231,10 +226,7 @@ private fun Preview() {
         Column {
             BackButton(
                 onClick = { },
-                modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.toolbar_padding),
-                    start = dimensionResource(id = R.dimen.toolbar_padding)
-                )
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.toolbar_padding))
             )
 
             Column(
@@ -244,8 +236,11 @@ private fun Preview() {
                     .fillMaxSize()
                     .align(Alignment.CenterHorizontally)
                     .verticalScroll(rememberScrollState())
-                    .padding(dimensionResource(id = R.dimen.main_screens_space))
+                    .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                    .animateContentSize()
             ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                 Text(
                     text = stringResource(R.string.choose_a_method),
                     fontWeight = FontWeight.Bold,
@@ -273,6 +268,8 @@ private fun Preview() {
 
                     }
                 )
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
             }
         }
     }

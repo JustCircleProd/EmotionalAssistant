@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.bd.core.presentation.compontents.ErrorLayout
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.MyButton
 import com.example.bd.core.presentation.compontents.textFields.emotionAdditionalInfo.DateTextField
@@ -49,23 +48,18 @@ fun EmotionAdditionalInfoScreen(
     Surface {
         val emotion by viewModel.emotion.collectAsStateWithLifecycle(null)
 
-        if (emotion == null || returnRoute == null) {
-            ErrorLayout(
-                onBackButtonClick = {
-                    navController.popBackStack()
-                }
-            )
-            return@Surface
-        }
+        if (emotion == null || returnRoute == null) return@Surface
 
         Column(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(dimensionResource(id = R.dimen.main_screens_space))
+                .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
                 .animateContentSize()
         ) {
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
             Text(
                 text = stringResource(R.string.emotion_added),
                 fontWeight = FontWeight.Bold,
@@ -83,7 +77,7 @@ fun EmotionAdditionalInfoScreen(
                 color = SubtitleTextColor,
             )
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             var dateTime by remember {
                 mutableStateOf(
@@ -121,7 +115,7 @@ fun EmotionAdditionalInfoScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             MyButton(
                 text = stringResource(id = R.string.confirm),
@@ -143,6 +137,8 @@ fun EmotionAdditionalInfoScreen(
                     }
                 }
             )
+
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
         }
     }
 }
@@ -157,9 +153,11 @@ private fun Preview() {
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(dimensionResource(id = R.dimen.main_screens_space))
+                    .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
                     .animateContentSize()
             ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                 Text(
                     text = stringResource(R.string.emotion_added),
                     fontWeight = FontWeight.Bold,
@@ -177,7 +175,7 @@ private fun Preview() {
                     color = SubtitleTextColor,
                 )
 
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 var dateTime by remember {
                     mutableStateOf(
@@ -215,7 +213,7 @@ private fun Preview() {
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 MyButton(
                     text = stringResource(id = R.string.confirm),
@@ -224,6 +222,8 @@ private fun Preview() {
 
                     }
                 )
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
             }
         }
     }

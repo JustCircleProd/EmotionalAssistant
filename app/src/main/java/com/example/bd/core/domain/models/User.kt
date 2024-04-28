@@ -10,15 +10,6 @@ class User : RealmObject {
     @PrimaryKey
     var id: ObjectId = ObjectId()
     var name: String = ""
-    var age: Int = 0
-    var gender: Gender
-        get() {
-            return Gender.valueOf(genderDescription)
-        }
-        set(value) {
-            genderDescription = value.name
-        }
-    private var genderDescription: String = Gender.MALE.name
     var emotions: RealmList<Emotion> = realmListOf()
     var emotionalStateTestResults: RealmList<EmotionalStateTestResult> = realmListOf()
 }

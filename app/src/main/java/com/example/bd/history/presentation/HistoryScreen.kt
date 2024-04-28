@@ -1,5 +1,6 @@
 package com.example.bd.history.presentation
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -36,10 +37,12 @@ import androidx.navigation.NavController
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BottomSheetContainerColor
+import com.example.bd.core.presentation.theme.SubtitleTextColor
 import com.example.bd.core.presentation.theme.White
 import com.example.bd.core.presentation.util.formatLocalDate
 import com.example.bd.history.presentation.components.AddEmotionCard
 import com.example.bd.history.presentation.components.EmotionCard
+import com.example.bd.history.presentation.components.EmotionalStateResultCard
 import com.example.bd.history.presentation.components.MyCalendar
 import com.example.db.R
 import kotlinx.coroutines.launch
@@ -81,8 +84,11 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(innerPadding)
-                    .padding(dimensionResource(id = R.dimen.main_screens_space))
+                    .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                    .animateContentSize()
             ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                 Text(
                     text = stringResource(R.string.history_of_your_states),
                     fontWeight = FontWeight.Medium,
@@ -102,6 +108,8 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                     },
                     emotions = emotions
                 )
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
             }
         }
     }
@@ -113,7 +121,11 @@ private fun BottomSheetContent(
     navController: NavController,
     viewModel: HistoryViewModel
 ) {
-    val emotionsForSelectedDate = viewModel.emotionsForSelectedDate.collectAsStateWithLifecycle()
+    val emotionsForSelectedDate by viewModel.emotionsForSelectedDate.collectAsStateWithLifecycle()
+
+    val emotionalStateResultsForSelectedDate by viewModel.emotionalStateTestResultsForSelectedDate.collectAsStateWithLifecycle(
+        initialValue = emptyList()
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -132,12 +144,25 @@ private fun BottomSheetContent(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(20.dp))
+
+            if (emotionsForSelectedDate.isEmpty() && emotionalStateResultsForSelectedDate.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.no_data),
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = AlegreyaFontFamily,
+                    fontSize = 19.sp,
+                    color = White,
+                    textAlign = TextAlign.Center
+                )
+
+                return@Column
+            }
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
@@ -148,13 +173,46 @@ private fun BottomSheetContent(
                         color = White,
                         textAlign = TextAlign.Center
                     )
+                }
 
-                    Spacer(Modifier.height(8.dp))
+                if (emotionalStateResultsForSelectedDate.isNotEmpty()) {
+                    items(emotionalStateResultsForSelectedDate.size) {
+                        val testResult = emotionalStateResultsForSelectedDate[it]
+                        val emotionalStateName =
+                            testResult.emotionalStateTest?.emotionalStateName ?: return@items
+
+                        EmotionalStateResultCard(
+                            emotionalStateName,
+                            onRecommendationButtonClick = {
+                                navController.navigate(
+                                    NavigationItem.EmotionalStateRecommendation.getRouteWithArguments(
+                                        emotionalStateName
+                                    )
+                                )
+                            },
+                            onDeleteButtonClick = {
+                                viewModel.deleteEmotionalStateTestResult(testResult)
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                } else {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = stringResource(R.string.no_data),
+                            fontFamily = AlegreyaFontFamily,
+                            fontSize = 17.sp,
+                            color = SubtitleTextColor,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
 
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Spacer(Modifier.height(30.dp))
+                    Spacer(Modifier.height(5.dp))
+                }
 
+                item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
                         text = stringResource(id = R.string.emotions),
                         fontWeight = FontWeight.Medium,
@@ -163,8 +221,6 @@ private fun BottomSheetContent(
                         color = White,
                         textAlign = TextAlign.Center
                     )
-
-                    Spacer(Modifier.height(8.dp))
                 }
 
                 item {
@@ -181,8 +237,8 @@ private fun BottomSheetContent(
                     )
                 }
 
-                items(emotionsForSelectedDate.value.size) {
-                    val emotion = emotionsForSelectedDate.value[it]
+                items(emotionsForSelectedDate.size) {
+                    val emotion = emotionsForSelectedDate[it]
 
                     EmotionCard(
                         emotion,
@@ -201,7 +257,7 @@ private fun BottomSheetContent(
                             )
                         },
                         onDeleteButtonClick = {
-                            viewModel.deleteEmotionResult(emotion)
+                            viewModel.deleteEmotion(emotion)
                         }
                     )
                 }

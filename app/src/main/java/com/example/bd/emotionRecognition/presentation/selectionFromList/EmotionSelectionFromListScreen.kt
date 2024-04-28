@@ -1,6 +1,7 @@
 package com.example.bd.emotionRecognition.presentation.selectionFromList
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -29,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.bd.core.domain.models.EmotionName
-import com.example.bd.core.presentation.compontents.ErrorLayout
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
@@ -62,23 +62,13 @@ fun EmotionSelectionFromListScreen(
     }
 
     Surface {
-        if (returnRoute == null) {
-            ErrorLayout(
-                onBackButtonClick = {
-                    onBackPressed()
-                }
-            )
-            return@Surface
-        }
-
         Column {
             BackButton(
                 onClick = { onBackPressed() },
-                modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.toolbar_padding),
-                    start = dimensionResource(id = R.dimen.toolbar_padding)
-                )
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.toolbar_padding))
             )
+
+            if (returnRoute == null) return@Surface
 
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -86,8 +76,11 @@ fun EmotionSelectionFromListScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(dimensionResource(id = R.dimen.main_screens_space))
+                    .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                    .animateContentSize()
             ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                 Text(
                     text = stringResource(R.string.select_your_emotion),
                     fontWeight = FontWeight.Bold,
@@ -107,10 +100,6 @@ fun EmotionSelectionFromListScreen(
 
                 var selectedEmotion by rememberSaveable { mutableStateOf(viewModel.recognizedEmotion.value) }
 
-                val selected: (Any) -> Boolean = {
-                    selectedEmotion == it as EmotionName
-                }
-
                 val onClick: (Any) -> Unit = {
                     selectedEmotion = it as EmotionName
                 }
@@ -119,11 +108,11 @@ fun EmotionSelectionFromListScreen(
                     OptionButton(
                         value = entry.key,
                         text = entry.value,
-                        selected = selected,
+                        selected = selectedEmotion == entry.key,
                         onClick = onClick
                     )
 
-                    if (index != emotionListItems.size) {
+                    if (index < emotionListItems.size - 1) {
                         Spacer(Modifier.height(8.dp))
                     }
                 }
@@ -159,6 +148,8 @@ fun EmotionSelectionFromListScreen(
                         }
                     }
                 )
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
             }
         }
     }
@@ -180,10 +171,7 @@ private fun Preview() {
             Column {
                 BackButton(
                     onClick = { onBackPressed() },
-                    modifier = Modifier.padding(
-                        top = dimensionResource(id = R.dimen.toolbar_padding),
-                        start = dimensionResource(id = R.dimen.toolbar_padding)
-                    )
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.toolbar_padding))
                 )
 
                 Column(
@@ -192,8 +180,11 @@ private fun Preview() {
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                        .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                        .animateContentSize()
                 ) {
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                     Text(
                         text = stringResource(R.string.select_your_emotion),
                         fontWeight = FontWeight.Bold,
@@ -213,10 +204,6 @@ private fun Preview() {
 
                     var selectedEmotion by rememberSaveable { mutableStateOf(EmotionName.HAPPINESS) }
 
-                    val selected: (Any) -> Boolean = {
-                        selectedEmotion == it as EmotionName
-                    }
-
                     val onClick: (Any) -> Unit = {
                         selectedEmotion = it as EmotionName
                     }
@@ -225,11 +212,11 @@ private fun Preview() {
                         OptionButton(
                             value = entry.key,
                             text = entry.value,
-                            selected = selected,
+                            selected = selectedEmotion == entry.key,
                             onClick = onClick
                         )
 
-                        if (index != emotionListItems.size) {
+                        if (index < emotionListItems.size - 1) {
                             Spacer(Modifier.height(8.dp))
                         }
                     }
@@ -243,6 +230,8 @@ private fun Preview() {
 
                         }
                     )
+
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
                 }
             }
         }

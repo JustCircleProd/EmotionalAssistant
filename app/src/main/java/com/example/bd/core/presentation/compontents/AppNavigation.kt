@@ -1,5 +1,6 @@
 package com.example.bd.core.presentation.compontents
 
+import com.example.bd.core.domain.models.EmotionalStateName
 import com.google.gson.GsonBuilder
 import org.mongodb.kbson.ObjectId
 import java.net.URLEncoder
@@ -17,7 +18,9 @@ enum class Screen {
     EMOTION_ADDITIONAL_INFO,
     EMOTION_RECOMMENDATION,
     EMOTION_DETAIL,
-    EMOTIONAL_STATE_TEST
+    EMOTIONAL_STATE_TEST,
+    EMOTIONAL_STATE_TEST_RESULT,
+    EMOTIONAL_STATE_RECOMMENDATION
 }
 
 sealed class NavigationItem(val route: String) {
@@ -152,5 +155,34 @@ sealed class NavigationItem(val route: String) {
         }
     }
 
-    data object EmotionalStateTest : NavigationItem(Screen.EMOTIONAL_STATE_TEST.name)
+    data object EmotionalStateTest : NavigationItem(
+        "${Screen.EMOTIONAL_STATE_TEST.name}/{returnRoute}"
+    ) {
+        const val RETURN_ROUTE_ARGUMENT_NAME = "returnRoute"
+
+        fun getRouteWithArguments(returnRoute: String): String {
+            return "${Screen.EMOTIONAL_STATE_TEST.name}/" +
+                    URLEncoder.encode(returnRoute, StandardCharsets.UTF_8.toString())
+        }
+    }
+
+    data object EmotionalStateTestResult : NavigationItem(
+        "${Screen.EMOTIONAL_STATE_TEST_RESULT.name}/{date}"
+    ) {
+        const val DATE_ARGUMENT_NAME = "date"
+
+        fun getRouteWithArguments(date: LocalDate): String {
+            return "${Screen.EMOTIONAL_STATE_TEST_RESULT.name}/$date"
+        }
+    }
+
+    data object EmotionalStateRecommendation : NavigationItem(
+        "${Screen.EMOTIONAL_STATE_RECOMMENDATION.name}/{emotionalStateName}"
+    ) {
+        const val EMOTIONAL_STATE_NAME_ARGUMENT_NAME = "emotionalStateName"
+
+        fun getRouteWithArguments(emotionalStateName: EmotionalStateName): String {
+            return "${Screen.EMOTIONAL_STATE_RECOMMENDATION.name}/${emotionalStateName.name}"
+        }
+    }
 }

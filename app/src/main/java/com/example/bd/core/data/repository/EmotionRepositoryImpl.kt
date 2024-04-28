@@ -23,6 +23,7 @@ class EmotionRepositoryImpl @Inject constructor(private val realm: Realm) :
             realm.write {
                 val user = realm.query<User>().find().first()
                 findLatest(user)?.emotions?.add(emotion)
+
                 findLatest(user)?.let {
                     copyToRealm(it, updatePolicy = UpdatePolicy.ALL)
                 }

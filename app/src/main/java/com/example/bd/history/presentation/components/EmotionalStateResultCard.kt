@@ -22,26 +22,34 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.bd.core.domain.models.EmotionalStateName
 import com.example.bd.core.presentation.compontents.buttons.MyIconButton
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BottomSheetCardContainerColor
 import com.example.bd.core.presentation.theme.MyRippleTheme
 import com.example.bd.core.presentation.theme.Red
 import com.example.bd.core.presentation.theme.White
+import com.example.bd.core.presentation.util.getEmotionalStateNameString
 import com.example.db.R
 
 @Composable
-fun EmotionalStateCard(
+fun EmotionalStateResultCard(
+    emotionalStateName: EmotionalStateName,
+    onDeleteButtonClick: () -> Unit,
+    onRecommendationButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Card(
         colors = CardDefaults.cardColors().copy(
             containerColor = BottomSheetCardContainerColor
         ),
+        onClick = { onRecommendationButtonClick() },
         modifier = modifier
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.calendar_day_card_rounded_corner_size)))
             .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
@@ -50,10 +58,14 @@ fun EmotionalStateCard(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
+                .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
                 .padding(dimensionResource(id = R.dimen.calendar_day_card_padding))
         ) {
             Text(
-                text = stringResource(id = R.string.emotional_state),
+                text = getEmotionalStateNameString(
+                    context,
+                    emotionalStateName
+                ),
                 fontFamily = AlegreyaFontFamily,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
@@ -69,13 +81,13 @@ fun EmotionalStateCard(
                     MyIconButton(
                         imageVector = Icons.Rounded.Delete,
                         iconTintColor = MaterialTheme.colorScheme.error,
-                        onClick = {}
+                        onClick = onDeleteButtonClick
                     )
                 }
 
                 MyIconButton(
                     imageVector = Icons.Rounded.ArrowBackIosNew,
-                    onClick = {},
+                    onClick = onRecommendationButtonClick,
                     iconModifier = Modifier.rotate(180f)
                 )
             }

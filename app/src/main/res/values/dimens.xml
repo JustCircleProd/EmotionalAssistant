@@ -9,13 +9,13 @@
     <dimen name="icon_button_size">40dp</dimen>
     <dimen name="icon_button_icon_size">24dp</dimen>
 
-    <dimen name="toolbar_padding">8dp</dimen>
+    <dimen name="toolbar_padding">6dp</dimen>
 
 
     <dimen name="option_button_rounded_corner_size">20dp</dimen>
 
 
-    <dimen name="welcome_screens_space">27dp</dimen>
+    <dimen name="registration_screens_space">27dp</dimen>
 
     <dimen name="start_screen_icon_size">200dp</dimen>
 
@@ -47,4 +47,9 @@
     <dimen name="calendar_day_card_padding">12dp</dimen>
     <dimen name="calendar_day_emotional_state_card_height">120dp</dimen>
     <dimen name="calendar_day_emotion_card_height">240dp</dimen>
+
+    <dimen name="emotional_state_test_question_card_rounded_corner_size">20dp</dimen>
+    <dimen name="emotional_state_test_question_card_horizontal_padding">22dp</dimen>
+    <dimen name="emotional_state_test_question_card_vertical_padding">16dp</dimen>
+    <dimen name="emotional_state_test_question_card_min_height">100dp</dimen>
 </resources>

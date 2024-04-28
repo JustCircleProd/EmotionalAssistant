@@ -1,5 +1,6 @@
 package com.example.bd.home.presentation
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.bd.core.presentation.compontents.ErrorLayout
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BdTheme
@@ -36,21 +36,17 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
     val user by viewModel.user.collectAsStateWithLifecycle(initialValue = null)
 
     Surface {
-        if (user == null) {
-            ErrorLayout(
-                onBackButtonClick = {
-                    navController.popBackStack()
-                }
-            )
-            return@Surface
-        }
+        if (user == null) return@Surface
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(dimensionResource(id = R.dimen.main_screens_space))
+                .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                .animateContentSize()
         ) {
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
             Text(
                 text = stringResource(R.string.main_screen_title, user!!.name),
                 fontWeight = FontWeight.Medium,
@@ -92,11 +88,17 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                 subtitle = stringResource(R.string.pass_test),
                 buttonText = stringResource(R.string.pass),
                 onButtonClick = {
-                    navController.navigate(NavigationItem.EmotionalStateTest.route)
+                    navController.navigate(
+                        NavigationItem.EmotionalStateTest.getRouteWithArguments(
+                            NavigationItem.Home.route
+                        )
+                    )
                 },
                 cardImageResId = R.drawable.action_card_emotional_state,
                 cardImageContentDescription = null
             )
+
+            Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
         }
     }
 }
@@ -111,8 +113,11 @@ private fun Preview() {
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(dimensionResource(id = R.dimen.main_screens_space))
+                    .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                    .animateContentSize()
             ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                 Text(
                     text = stringResource(R.string.main_screen_title, "Имя"),
                     fontWeight = FontWeight.Medium,
@@ -155,6 +160,8 @@ private fun Preview() {
                     cardImageResId = R.drawable.action_card_emotional_state,
                     cardImageContentDescription = null
                 )
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.bd.emotionDetail.presentation
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,7 +48,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.bd.core.presentation.compontents.EmotionImage
-import com.example.bd.core.presentation.compontents.ErrorLayout
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
@@ -75,14 +75,7 @@ fun EmotionDetailScreen(
     Surface {
         val emotion by viewModel.emotion.collectAsStateWithLifecycle(null)
 
-        if (emotion == null) {
-            ErrorLayout(
-                onBackButtonClick = {
-                    navController.popBackStack()
-                }
-            )
-            return@Surface
-        }
+        if (emotion == null) return@Surface
 
         var inEditModeState by rememberSaveable {
             mutableStateOf(inEditMode)
@@ -125,8 +118,7 @@ fun EmotionDetailScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = dimensionResource(id = R.dimen.toolbar_padding))
-                        .padding(horizontal = dimensionResource(id = R.dimen.toolbar_padding))
+                        .padding(dimensionResource(id = R.dimen.toolbar_padding))
                 ) {
                     BackButton(
                         onClick = { navController.popBackStack() },
@@ -158,8 +150,11 @@ fun EmotionDetailScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                        .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                        .animateContentSize()
                 ) {
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                     val context = LocalContext.current
 
                     val emotionImageFileName = emotion!!.imageFileName
@@ -280,7 +275,7 @@ fun EmotionDetailScreen(
                         )
                     }
 
-                    Spacer(Modifier.height(70.dp))
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
                 }
             }
         }
@@ -302,8 +297,7 @@ private fun Preview() {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = dimensionResource(id = R.dimen.toolbar_padding))
-                        .padding(horizontal = dimensionResource(id = R.dimen.toolbar_padding))
+                        .padding(dimensionResource(id = R.dimen.toolbar_padding))
                 ) {
                     BackButton(
                         onClick = { },
@@ -335,8 +329,11 @@ private fun Preview() {
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                        .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                        .animateContentSize()
                 ) {
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                     Image(
                         painter = painterResource(id = R.drawable.image_preview),
                         contentDescription = null,
@@ -430,7 +427,7 @@ private fun Preview() {
                         )
                     }
 
-                    Spacer(Modifier.height(50.dp))
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
                 }
             }
         }
@@ -452,8 +449,7 @@ private fun PreviewInEditMode() {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = dimensionResource(id = R.dimen.toolbar_padding))
-                        .padding(horizontal = dimensionResource(id = R.dimen.toolbar_padding))
+                        .padding(dimensionResource(id = R.dimen.toolbar_padding))
                 ) {
                     BackButton(
                         onClick = { },
@@ -485,8 +481,11 @@ private fun PreviewInEditMode() {
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                        .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                        .animateContentSize()
                 ) {
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                     Image(
                         painter = painterResource(id = R.drawable.image_preview),
                         contentDescription = null,
@@ -580,6 +579,8 @@ private fun PreviewInEditMode() {
                             }
                         )
                     }
+
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
                 }
             }
         }

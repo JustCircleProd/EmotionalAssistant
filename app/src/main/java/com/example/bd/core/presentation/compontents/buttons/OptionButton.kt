@@ -31,8 +31,9 @@ import com.example.db.R
 fun OptionButton(
     value: Any,
     text: String,
-    selected: (Any) -> Boolean,
-    onClick: (Any) -> Unit
+    selected: Boolean,
+    onClick: (Any) -> Unit,
+    isError: Boolean = false
 ) {
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.option_button_rounded_corner_size)),
@@ -40,8 +41,12 @@ fun OptionButton(
         modifier = Modifier
             .fillMaxWidth()
             .border(
-                width = if (selected(value)) 2.dp else 0.dp,
-                color = if (selected(value)) MaterialTheme.colorScheme.primary else Color.Transparent,
+                width = if (selected || isError) 2.dp else 0.dp,
+                color = when {
+                    selected -> MaterialTheme.colorScheme.primary
+                    isError -> MaterialTheme.colorScheme.error
+                    else -> Color.Transparent
+                },
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.option_button_rounded_corner_size))
             )
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.option_button_rounded_corner_size)))
@@ -55,8 +60,8 @@ fun OptionButton(
             )
         ) {
             RadioButton(
-                selected = selected(value),
-                colors = RadioButtonDefaults.colors().copy(unselectedColor = White),
+                selected = selected,
+                colors = RadioButtonDefaults.colors(unselectedColor = White),
                 onClick = { onClick(value) }
             )
 

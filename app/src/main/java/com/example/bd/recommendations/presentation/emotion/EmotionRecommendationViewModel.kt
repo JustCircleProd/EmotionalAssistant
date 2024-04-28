@@ -1,4 +1,4 @@
-package com.example.bd.emotionRecommendation.presentation
+package com.example.bd.recommendations.presentation.emotion
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

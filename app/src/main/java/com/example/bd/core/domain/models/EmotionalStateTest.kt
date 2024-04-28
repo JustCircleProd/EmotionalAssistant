@@ -1,7 +1,5 @@
 package com.example.bd.core.domain.models
 
-import io.realm.kotlin.ext.realmListOf
-import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId
@@ -10,7 +8,7 @@ class EmotionalStateTest : RealmObject {
     @PrimaryKey
     var id: ObjectId = ObjectId()
 
-    var name: EmotionalStateName
+    var emotionalStateName: EmotionalStateName
         get() {
             return EmotionalStateName.valueOf(nameDescription)
         }
@@ -19,6 +17,7 @@ class EmotionalStateTest : RealmObject {
         }
     private var nameDescription: String = EmotionalStateName.DEPRESSION.name
 
+    var questionsResourceEntryName: String = ""
+    var numberOfQuestions: Int = 0
     var goalScore: Int = 0
-    var questions: RealmList<EmotionalStateTestQuestion> = realmListOf()
 }

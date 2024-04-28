@@ -1,5 +1,6 @@
 package com.example.bd.history.presentation
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -62,6 +63,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.bd.core.domain.models.EmotionalStateName
 import com.example.bd.core.presentation.compontents.buttons.MyIconButton
 import com.example.bd.core.presentation.theme.AlegreyaFontFamily
 import com.example.bd.core.presentation.theme.BdTheme
@@ -73,7 +75,7 @@ import com.example.bd.core.presentation.theme.SubtitleTextColor
 import com.example.bd.core.presentation.theme.White
 import com.example.bd.core.presentation.util.getMonthName
 import com.example.bd.history.presentation.components.AddEmotionCard
-import com.example.bd.history.presentation.components.EmotionalStateCard
+import com.example.bd.history.presentation.components.EmotionalStateResultCard
 import com.example.db.R
 import com.kizitonwose.calendar.compose.CalendarLayoutInfo
 import com.kizitonwose.calendar.compose.CalendarState
@@ -149,11 +151,29 @@ fun HistoryScreenPreview(isBottomSheetExpanded: Boolean = false) {
                             }
 
                             item {
-                                EmotionalStateCard(Modifier.weight(1f))
+                                EmotionalStateResultCard(
+                                    EmotionalStateName.DEPRESSION,
+                                    onRecommendationButtonClick = {
+
+                                    },
+                                    onDeleteButtonClick = {
+
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                )
                             }
 
                             item {
-                                EmotionalStateCard(Modifier.weight(1f))
+                                EmotionalStateResultCard(
+                                    EmotionalStateName.ASTHENIA,
+                                    onRecommendationButtonClick = {
+
+                                    },
+                                    onDeleteButtonClick = {
+
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                )
                             }
 
                             item(span = { GridItemSpan(maxLineSpan) }) {
@@ -196,8 +216,11 @@ fun HistoryScreenPreview(isBottomSheetExpanded: Boolean = false) {
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                         .padding(innerPadding)
-                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                        .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                        .animateContentSize()
                 ) {
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                     Text(
                         text = stringResource(R.string.history_of_your_states),
                         fontWeight = FontWeight.Medium,
@@ -211,6 +234,8 @@ fun HistoryScreenPreview(isBottomSheetExpanded: Boolean = false) {
                     Spacer(Modifier.height(20.dp))
 
                     MyCalendar()
+
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
                 }
             }
         }
@@ -251,7 +276,6 @@ private fun EmotionCard(
                     .fillMaxWidth()
                     .background(Color.Black.copy(backgroundAlpha))
             )
-
 
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
@@ -321,7 +345,7 @@ private fun EmotionActionButtons(
 }
 
 @Composable
-fun MyCalendar(
+private fun MyCalendar(
     modifier: Modifier = Modifier
 ) {
     val currentMonth = remember { YearMonth.of(2024, 2) }

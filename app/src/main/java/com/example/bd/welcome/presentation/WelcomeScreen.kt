@@ -1,5 +1,6 @@
 package com.example.bd.welcome.presentation
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,11 +48,13 @@ fun WelcomeScreen(navController: NavHostController) {
                     contentScale = ContentScale.Crop
                 )
                 .verticalScroll(rememberScrollState())
-                .padding(dimensionResource(id = R.dimen.welcome_screens_space))
+                .padding(horizontal = dimensionResource(id = R.dimen.registration_screens_space))
+                .animateContentSize()
         ) {
             val (welcomeColumn, startButton) = createRefs()
 
-            Column(verticalArrangement = Arrangement.Center,
+            Column(
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.constrainAs(welcomeColumn) {
                     start.linkTo(parent.start)
@@ -60,6 +63,8 @@ fun WelcomeScreen(navController: NavHostController) {
                     bottom.linkTo(startButton.top)
                 }
             ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.registration_screens_space)))
+
                 Image(
                     painter = painterResource(id = R.drawable.icon_emotion),
                     contentDescription = stringResource(id = R.string.icon_emotion_content_description),
@@ -93,12 +98,8 @@ fun WelcomeScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            MyButton(
-                text = stringResource(id = R.string.start),
-                onClick = {
-                    navController.navigate(NavigationItem.Register.route)
-                },
-                modifier = Modifier
+            Column(
+                Modifier
                     .fillMaxWidth()
                     .constrainAs(startButton) {
                         start.linkTo(parent.start)
@@ -106,7 +107,17 @@ fun WelcomeScreen(navController: NavHostController) {
                         end.linkTo(parent.end)
                         bottom.linkTo(parent.bottom)
                     }
-            )
+            ) {
+                MyButton(
+                    text = stringResource(id = R.string.start),
+                    onClick = {
+                        navController.navigate(NavigationItem.Register.route)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.registration_screens_space)))
+            }
         }
     }
 }

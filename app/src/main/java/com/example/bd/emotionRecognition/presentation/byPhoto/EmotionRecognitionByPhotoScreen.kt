@@ -52,7 +52,6 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.bd.core.domain.models.EmotionName
-import com.example.bd.core.presentation.compontents.ErrorLayout
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.buttons.BackButton
 import com.example.bd.core.presentation.compontents.buttons.MyButton
@@ -90,24 +89,15 @@ fun EmotionRecognitionByPhotoScreen(
     }
 
     Surface {
-        if (returnRoute == null) {
-            ErrorLayout(
-                onBackButtonClick = {
-                    onBackPressed()
-                }
-            )
-            return@Surface
-        }
-
         val recognizedEmotion = viewModel.recognizedEmotion.collectAsStateWithLifecycle()
         val imageBitmap = viewModel.imageBitmap.collectAsStateWithLifecycle()
 
         val recognitionStage = viewModel.recognitionStage.collectAsStateWithLifecycle()
 
-        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_animation_2))
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_animation))
 
         AnimatedVisibility(
-            visible = recognitionStage.value == EmotionRecognitionStage.FACE_DETECTION &&
+            visible = recognitionStage.value == EmotionRecognitionStage.FACE_DETECTION ||
                     recognitionStage.value == EmotionRecognitionStage.EMOTION_CLASSIFICATION,
             enter = fadeIn(animationSpec = tween(3000)),
             exit = fadeOut(animationSpec = tween(2000))
@@ -123,11 +113,11 @@ fun EmotionRecognitionByPhotoScreen(
         Column {
             BackButton(
                 onClick = { onBackPressed() },
-                modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.toolbar_padding),
-                    start = dimensionResource(id = R.dimen.toolbar_padding)
-                )
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.toolbar_padding))
             )
+
+            if (returnRoute == null) return@Surface
+
 
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -135,9 +125,11 @@ fun EmotionRecognitionByPhotoScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(dimensionResource(id = R.dimen.main_screens_space))
+                    .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
                     .animateContentSize()
             ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                 TitleText(recognitionStage, recognizedEmotion)
 
                 Spacer(Modifier.height(30.dp))
@@ -155,7 +147,11 @@ fun EmotionRecognitionByPhotoScreen(
                 ) {
                     SuccessfulResultButtons(
                         onSelectFromListButtonClicked = {
-                            "${NavigationItem.EmotionSelectionFromList}/${returnRoute}"
+                            navController.navigate(
+                                NavigationItem.EmotionSelectionFromList.getRouteWithArguments(
+                                    returnRoute
+                                )
+                            )
                         },
                         onConfirmButtonClicked = {
                             viewModel.onEvent(EmotionRecognitionEvent.OnEmotionResultConfirmed)
@@ -194,6 +190,8 @@ fun EmotionRecognitionByPhotoScreen(
                         onClick = { onBackPressed() }
                     )
                 }
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
             }
         }
     }
@@ -252,14 +250,17 @@ private fun TitleText(
 }
 
 @Composable
-private fun EmotionImage(imageBitmap: State<Bitmap?>) {
+private fun EmotionImage(
+    imageBitmap: State<Bitmap?>
+) {
     AnimatedContent(
         imageBitmap.value,
         transitionSpec = {
             fadeIn(animationSpec = tween(700, delayMillis = 400)) togetherWith fadeOut(
                 animationSpec = tween(300)
             )
-        }, label = stringResource(id = R.string.emotion_recognition)
+        },
+        label = stringResource(id = R.string.emotion_recognition)
     ) {
         if (it != null) {
             Image(
@@ -267,11 +268,11 @@ private fun EmotionImage(imageBitmap: State<Bitmap?>) {
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
+                    .clip(RoundedCornerShape(dimensionResource(id = R.dimen.emotion_image_rounded_corner_size)))
                     .size(
                         dimensionResource(id = R.dimen.emotion_image_width),
                         dimensionResource(id = R.dimen.emotion_image_height)
                     )
-                    .clip(RoundedCornerShape(dimensionResource(id = R.dimen.emotion_image_rounded_corner_size)))
             )
         }
     }
@@ -308,7 +309,7 @@ private fun PreviewFaceDetection() {
             val recognitionStage =
                 remember { mutableStateOf(EmotionRecognitionStage.FACE_DETECTION) }
 
-            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_animation_2))
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_animation))
 
             AnimatedVisibility(
                 visible = recognitionStage.value == EmotionRecognitionStage.FACE_DETECTION &&
@@ -327,10 +328,7 @@ private fun PreviewFaceDetection() {
             Column {
                 BackButton(
                     onClick = { },
-                    modifier = Modifier.padding(
-                        top = dimensionResource(id = R.dimen.toolbar_padding),
-                        start = dimensionResource(id = R.dimen.toolbar_padding)
-                    )
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.toolbar_padding))
                 )
 
                 Column(
@@ -339,9 +337,11 @@ private fun PreviewFaceDetection() {
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                        .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
                         .animateContentSize()
                 ) {
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                     Text(
                         text = "Стадия распознавания эмоции",
                         textAlign = TextAlign.Center,
@@ -372,7 +372,7 @@ private fun PreviewFaceDetection() {
                             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.emotion_image_rounded_corner_size)))
                     )
 
-                    Spacer(Modifier.height(50.dp))
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
                 }
             }
         }
@@ -387,7 +387,7 @@ private fun PreviewEmotionClassified() {
             val recognitionStage =
                 remember { mutableStateOf(EmotionRecognitionStage.EMOTION_CLASSIFIED) }
 
-            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_animation_2))
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_animation))
 
             AnimatedVisibility(
                 visible = recognitionStage.value == EmotionRecognitionStage.FACE_DETECTION &&
@@ -406,10 +406,7 @@ private fun PreviewEmotionClassified() {
             Column {
                 BackButton(
                     onClick = { },
-                    modifier = Modifier.padding(
-                        top = dimensionResource(id = R.dimen.toolbar_padding),
-                        start = dimensionResource(id = R.dimen.toolbar_padding)
-                    )
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.toolbar_padding))
                 )
 
                 Column(
@@ -418,9 +415,11 @@ private fun PreviewEmotionClassified() {
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                        .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
                         .animateContentSize()
                 ) {
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                     Text(
                         text = "Распознанная эмоция",
                         textAlign = TextAlign.Center,
@@ -461,6 +460,8 @@ private fun PreviewEmotionClassified() {
 
                         }
                     )
+
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
                 }
             }
         }
@@ -474,7 +475,7 @@ private fun PreviewError() {
         Surface {
             val recognitionStage = remember { mutableStateOf(EmotionRecognitionStage.ERROR) }
 
-            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_animation_2))
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.wave_animation))
 
             AnimatedVisibility(
                 visible = recognitionStage.value == EmotionRecognitionStage.FACE_DETECTION &&
@@ -493,10 +494,7 @@ private fun PreviewError() {
             Column {
                 BackButton(
                     onClick = { },
-                    modifier = Modifier.padding(
-                        top = dimensionResource(id = R.dimen.toolbar_padding),
-                        start = dimensionResource(id = R.dimen.toolbar_padding)
-                    )
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.toolbar_padding))
                 )
 
                 Column(
@@ -505,9 +503,11 @@ private fun PreviewError() {
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(dimensionResource(id = R.dimen.main_screens_space))
+                        .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
                         .animateContentSize()
                 ) {
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
                     Text(
                         text = "Ошибка",
                         textAlign = TextAlign.Center,
@@ -545,6 +545,8 @@ private fun PreviewError() {
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { }
                     )
+
+                    Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
                 }
             }
         }

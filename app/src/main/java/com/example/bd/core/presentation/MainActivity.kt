@@ -32,6 +32,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.bd.core.domain.models.EmotionalStateName
 import com.example.bd.core.presentation.compontents.NavigationItem
 import com.example.bd.core.presentation.compontents.botomNavigationBar.BottomNavigationBar
 import com.example.bd.core.presentation.compontents.sharedViewModel
@@ -43,10 +44,12 @@ import com.example.bd.emotionRecognition.presentation.byPhoto.EmotionRecognition
 import com.example.bd.emotionRecognition.presentation.methodSelection.EmotionRecognitionMethodSelectionScreen
 import com.example.bd.emotionRecognition.presentation.selectionFromList.EmotionSelectionFromListScreen
 import com.example.bd.emotionRecognition.presentation.viewModel.EmotionRecognitionViewModel
-import com.example.bd.emotionRecommendation.presentation.EmotionRecommendationScreen
 import com.example.bd.emotionalStateTest.presentation.test.EmotionalStateTestScreen
+import com.example.bd.emotionalStateTest.presentation.testResult.EmotionalStateTestResultScreen
 import com.example.bd.history.presentation.HistoryScreen
 import com.example.bd.home.presentation.HomeScreen
+import com.example.bd.recommendations.presentation.emotion.EmotionRecommendationScreen
+import com.example.bd.recommendations.presentation.emotionalState.EmotionalStateRecommendationScreen
 import com.example.bd.registration.presentation.RegisterScreen
 import com.example.bd.welcome.presentation.WelcomeScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -215,8 +218,7 @@ fun AppNavHost(
             )
         ) {
             val returnRoute =
-                it.arguments?.getString(NavigationItem.EmotionSelectionFromList.RETURN_ROUTE_ARGUMENT_NAME)
-
+                it.arguments?.getString(NavigationItem.EmotionAdditionalInfo.RETURN_ROUTE_ARGUMENT_NAME)
 
             EmotionAdditionalInfoScreen(navController, returnRoute)
         }
@@ -250,8 +252,46 @@ fun AppNavHost(
             EmotionDetailScreen(navController, inEditMode)
         }
 
-        animatedComposable(NavigationItem.EmotionalStateTest.route) {
-            EmotionalStateTestScreen(navController)
+        animatedComposable(
+            NavigationItem.EmotionalStateTest.route,
+            arguments = listOf(
+                navArgument(NavigationItem.EmotionalStateTest.RETURN_ROUTE_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            val returnRoute =
+                it.arguments?.getString(NavigationItem.EmotionalStateTest.RETURN_ROUTE_ARGUMENT_NAME)
+
+            EmotionalStateTestScreen(navController, returnRoute)
+        }
+
+        animatedComposable(
+            NavigationItem.EmotionalStateTestResult.route,
+            arguments = listOf(
+                navArgument(NavigationItem.EmotionalStateTestResult.DATE_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            EmotionalStateTestResultScreen(navController)
+        }
+
+        animatedComposable(
+            NavigationItem.EmotionalStateRecommendation.route,
+            arguments = listOf(
+                navArgument(NavigationItem.EmotionalStateRecommendation.EMOTIONAL_STATE_NAME_ARGUMENT_NAME) {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            val emotionalStateName =
+                it.arguments?.getString(NavigationItem.EmotionalStateRecommendation.EMOTIONAL_STATE_NAME_ARGUMENT_NAME)
+                    ?.let { emotionalStateNameString ->
+                        EmotionalStateName.valueOf(emotionalStateNameString)
+                    }
+
+            EmotionalStateRecommendationScreen(navController, emotionalStateName)
         }
     }
 }
