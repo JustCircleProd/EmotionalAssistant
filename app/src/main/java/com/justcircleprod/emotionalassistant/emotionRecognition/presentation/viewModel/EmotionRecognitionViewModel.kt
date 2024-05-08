@@ -6,6 +6,10 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.GsonBuilder
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.Face
+import com.google.mlkit.vision.face.FaceDetector
 import com.justcircleprod.emotionalassistant.core.domain.models.Emotion
 import com.justcircleprod.emotionalassistant.core.domain.models.EmotionName
 import com.justcircleprod.emotionalassistant.core.domain.repository.EmotionRepository
@@ -13,17 +17,12 @@ import com.justcircleprod.emotionalassistant.core.domain.repository.InternalStor
 import com.justcircleprod.emotionalassistant.core.presentation.compontents.NavigationItem
 import com.justcircleprod.emotionalassistant.emotionRecognition.presentation.util.rotateImageIfNeeded
 import com.justcircleprod.emotionalassistant.emotionRecognition.presentation.util.toGrayscaleByteBuffer
-import com.google.gson.GsonBuilder
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.face.Face
-import com.google.mlkit.vision.face.FaceDetection
-import com.google.mlkit.vision.face.FaceDetector
-import com.google.mlkit.vision.face.FaceDetectorOptions
-import com.justcircleprod.emotionalassistant.ml.Model
+import com.justcircleprod.emotionalassistant.ml.EmotionRecognitionModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 import org.tensorflow.lite.DataType
@@ -36,19 +35,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EmotionRecognitionViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val emotionRepository: EmotionRepository,
     private val internalStorageRepository: InternalStorageRepository,
-    private val emotionRecognitionModel: Model,
-    savedStateHandle: SavedStateHandle
+    private val emotionRecognitionModel: EmotionRecognitionModel,
+    private val faceDetector: FaceDetector
 ) : ViewModel() {
 
-    private val imageSize = 48
-    private val faceDetector: FaceDetector = run {
-        val options = FaceDetectorOptions.Builder()
-            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
-            .build()
-
-        FaceDetection.getClient(options)
+    companion object {
+        private const val IMAGE_SIZE = 48
     }
 
     val recognizedEmotion = MutableStateFlow<EmotionName?>(null)
@@ -59,7 +54,7 @@ class EmotionRecognitionViewModel @Inject constructor(
 
     private var imageFileName: String? = null
 
-    // Shows the emotion Id after it is added to the database
+    // Indicates a successful addition or update
     val savedEmotionId = MutableStateFlow<ObjectId?>(null)
 
     // dateTime is passed if the screen was opened to add emotion for certain date
@@ -106,12 +101,12 @@ class EmotionRecognitionViewModel @Inject constructor(
                 detectFace()
             }
 
-            EmotionRecognitionEvent.OnEmotionResultConfirmed -> {
-                if (emotionIdToUpdate != null) {
-                    updateEmotion()
-                } else {
-                    saveEmotion()
-                }
+            EmotionRecognitionEvent.OnEmotionResultConfirmedToAdd -> {
+                saveEmotion()
+            }
+
+            is EmotionRecognitionEvent.OnEmotionResultConfirmedToUpdate -> {
+                updateEmotion(event.context)
             }
         }
     }
@@ -132,20 +127,22 @@ class EmotionRecognitionViewModel @Inject constructor(
 
         faceDetector.process(image)
             .addOnSuccessListener { faces ->
-                if (faces.isNotEmpty()) {
-                    viewModelScope.launch(Dispatchers.Default) {
-                        delay(1000)
-                        cropDetectedFace(imageBitmap.value!!, faces[0])
-
-                        imageFileName = internalStorageRepository.getImageFileName()
-                        internalStorageRepository.saveImage(imageFileName!!, imageBitmap.value!!)
-
-                        delay(2000)
-                        classify()
-                    }
-                } else {
+                if (faces.isEmpty()) {
                     recognitionStage.value = EmotionRecognitionStage.FACE_NOT_DETECTED
+                    return@addOnSuccessListener
                 }
+
+                viewModelScope.launch(Dispatchers.Default) {
+                    delay(1000)
+                    cropDetectedFace(imageBitmap.value!!, faces[0])
+
+                    imageFileName = internalStorageRepository.getImageFileName()
+                    internalStorageRepository.saveImage(imageFileName!!, imageBitmap.value!!)
+
+                    delay(2000)
+                    classifyEmotion()
+                }
+
             }
             .addOnFailureListener {
                 recognitionStage.value = EmotionRecognitionStage.ERROR
@@ -176,14 +173,14 @@ class EmotionRecognitionViewModel @Inject constructor(
     }
 
 
-    private fun classify() {
+    private fun classifyEmotion() {
         try {
-            val image = Bitmap.createScaledBitmap(imageBitmap.value!!, imageSize, imageSize, false)
+            val image =
+                Bitmap.createScaledBitmap(imageBitmap.value!!, IMAGE_SIZE, IMAGE_SIZE, false)
 
-            // Creates inputs for reference.
             val inputFeature0 =
                 TensorBuffer.createFixedSize(
-                    intArrayOf(1, imageSize, imageSize, 1),
+                    intArrayOf(1, IMAGE_SIZE, IMAGE_SIZE, 1),
                     DataType.FLOAT32
                 )
             val byteBuffer = image.toGrayscaleByteBuffer()
@@ -218,20 +215,28 @@ class EmotionRecognitionViewModel @Inject constructor(
                 imageFileName = this@EmotionRecognitionViewModel.imageFileName
             }
 
-            emotionRepository.insert(emotion)
+            emotionRepository.add(emotion)
             savedEmotionId.value = emotion.id
         }
     }
 
-    private fun updateEmotion() {
+    private fun updateEmotion(context: Context) {
         if (emotionIdToUpdate == null) return
 
         viewModelScope.launch {
+            val oldImageFileName =
+                emotionRepository.getById(emotionIdToUpdate).first()?.imageFileName
+
+            if (oldImageFileName != null) {
+                internalStorageRepository.deleteImage(context, oldImageFileName)
+            }
+
             emotionRepository.update(
                 id = emotionIdToUpdate,
                 newName = recognizedEmotion.value!!,
                 newImageFileName = this@EmotionRecognitionViewModel.imageFileName
             )
+            savedEmotionId.value = emotionIdToUpdate
         }
     }
 }

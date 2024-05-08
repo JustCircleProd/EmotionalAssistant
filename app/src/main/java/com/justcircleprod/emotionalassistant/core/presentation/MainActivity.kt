@@ -50,7 +50,7 @@ import com.justcircleprod.emotionalassistant.history.presentation.HistoryScreen
 import com.justcircleprod.emotionalassistant.home.presentation.HomeScreen
 import com.justcircleprod.emotionalassistant.recommendations.presentation.emotion.EmotionRecommendationScreen
 import com.justcircleprod.emotionalassistant.recommendations.presentation.emotionalState.EmotionalStateRecommendationScreen
-import com.justcircleprod.emotionalassistant.registration.presentation.RegisterScreen
+import com.justcircleprod.emotionalassistant.registration.presentation.RegistrationScreen
 import com.justcircleprod.emotionalassistant.welcome.presentation.WelcomeScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -134,8 +134,8 @@ fun AppNavHost(
             WelcomeScreen(navController)
         }
 
-        animatedComposable(NavigationItem.Register.route) {
-            RegisterScreen(navController)
+        animatedComposable(NavigationItem.Registration.route) {
+            RegistrationScreen(navController)
         }
 
         animatedComposable(NavigationItem.Home.route) {

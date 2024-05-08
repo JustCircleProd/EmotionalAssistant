@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 class EmotionRepositoryImpl @Inject constructor(private val realm: Realm) :
     EmotionRepository {
-    override suspend fun insert(emotion: Emotion) {
+    override suspend fun add(emotion: Emotion) {
         withContext(Dispatchers.IO) {
             realm.write {
                 val user = realm.query<User>().find().first()
@@ -63,13 +63,10 @@ class EmotionRepositoryImpl @Inject constructor(private val realm: Realm) :
         newNote: String?
     ) {
         withContext(Dispatchers.IO) {
-            val emotion = realm
-                .query<Emotion>("id == $0", id)
-                .find()
-                .first()
-
             realm.write {
-                findLatest(emotion)?.let {
+                val emotion = query<Emotion>("id == $0", id).find().first()
+
+                emotion.let {
                     if (newName != null) {
                         it.name = newName
                     }

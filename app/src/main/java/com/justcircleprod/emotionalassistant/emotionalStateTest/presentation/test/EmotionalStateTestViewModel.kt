@@ -96,7 +96,7 @@ class EmotionalStateTestViewModel @Inject constructor(
         viewModelScope.launch {
             testResults.forEach {
                 if (it.score > it.emotionalStateTest!!.goalScore) {
-                    emotionalStateTestResultRepository.insert(it)
+                    emotionalStateTestResultRepository.add(it)
                 }
             }
 

@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.domain.models.EmotionalStateName
 import com.justcircleprod.emotionalassistant.core.presentation.compontents.buttons.MyIconButton
 import com.justcircleprod.emotionalassistant.core.presentation.theme.AlegreyaFontFamily
@@ -34,10 +35,9 @@ import com.justcircleprod.emotionalassistant.core.presentation.theme.MyRippleThe
 import com.justcircleprod.emotionalassistant.core.presentation.theme.Red
 import com.justcircleprod.emotionalassistant.core.presentation.theme.White
 import com.justcircleprod.emotionalassistant.core.presentation.util.getEmotionalStateNameString
-import com.justcircleprod.emotionalassistant.R
 
 @Composable
-fun EmotionalStateResultCard(
+fun EmotionalStateCard(
     emotionalStateName: EmotionalStateName,
     onDeleteButtonClick: () -> Unit,
     onRecommendationButtonClick: () -> Unit,

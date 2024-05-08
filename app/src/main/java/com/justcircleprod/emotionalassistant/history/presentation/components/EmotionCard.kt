@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.domain.models.Emotion
 import com.justcircleprod.emotionalassistant.core.presentation.compontents.buttons.MyIconButton
 import com.justcircleprod.emotionalassistant.core.presentation.theme.AlegreyaFontFamily
@@ -44,7 +45,6 @@ import com.justcircleprod.emotionalassistant.core.presentation.theme.SubtitleTex
 import com.justcircleprod.emotionalassistant.core.presentation.theme.White
 import com.justcircleprod.emotionalassistant.core.presentation.util.formatLocalTime
 import com.justcircleprod.emotionalassistant.core.presentation.util.getEmotionNameString
-import com.justcircleprod.emotionalassistant.R
 import java.io.File
 
 @Composable

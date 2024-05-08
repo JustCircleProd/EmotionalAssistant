@@ -10,14 +10,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor(private val userRepository: UserRepository) :
+class RegistrationViewModel @Inject constructor(private val userRepository: UserRepository) :
     ViewModel() {
 
     val isUserRegistered = MutableStateFlow(false)
 
-    fun onEvent(event: RegisterEvent) {
+    fun onEvent(event: RegistrationEvent) {
         when (event) {
-            is RegisterEvent.OnConfirmPressed -> {
+            is RegistrationEvent.OnConfirmPressed -> {
                 registerUser(
                     userName = event.name
                 )
@@ -27,7 +27,7 @@ class RegisterViewModel @Inject constructor(private val userRepository: UserRepo
 
     private fun registerUser(userName: String) {
         viewModelScope.launch {
-            userRepository.insert(
+            userRepository.add(
                 User().apply {
                     name = userName
                 }

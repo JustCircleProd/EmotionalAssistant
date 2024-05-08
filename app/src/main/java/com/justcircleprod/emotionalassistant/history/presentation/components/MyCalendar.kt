@@ -41,10 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.domain.models.Emotion
 import com.justcircleprod.emotionalassistant.core.presentation.theme.AlegreyaFontFamily
+import com.justcircleprod.emotionalassistant.core.presentation.theme.White
 import com.justcircleprod.emotionalassistant.core.presentation.util.getMonthName
-import com.justcircleprod.emotionalassistant.R
 import com.kizitonwose.calendar.compose.CalendarLayoutInfo
 import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -178,6 +179,7 @@ private fun CalendarTitle(
             text = "$monthStr $yearStr",
             fontFamily = AlegreyaFontFamily,
             fontSize = 21.sp,
+            color = White,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f)
@@ -193,11 +195,14 @@ private fun CalendarTitle(
 private fun BackMonthButton(onClick: () -> Unit) {
     IconButton(
         onClick = onClick,
-        modifier = Modifier.clip(shape = CircleShape)
+        modifier = Modifier
+            .size(dimensionResource(id = R.dimen.icon_button_size))
     ) {
         Icon(
             imageVector = Icons.Rounded.ArrowBackIosNew,
-            contentDescription = null
+            contentDescription = null,
+            tint = White,
+            modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_icon_size))
         )
     }
 }
@@ -207,12 +212,12 @@ private fun ForwardMonthButton(onClick: () -> Unit) {
     IconButton(
         onClick = onClick,
         modifier = Modifier
-            .clip(shape = CircleShape)
             .size(dimensionResource(id = R.dimen.icon_button_size))
     ) {
         Icon(
             imageVector = Icons.Rounded.ArrowBackIosNew,
             contentDescription = null,
+            tint = White,
             modifier = Modifier
                 .rotate(180f)
                 .size(dimensionResource(id = R.dimen.icon_button_icon_size))
@@ -230,6 +235,7 @@ private fun MonthHeader(daysOfWeek: List<DayOfWeek>) {
                 textAlign = TextAlign.Center,
                 fontFamily = AlegreyaFontFamily,
                 fontSize = 16.sp,
+                color = White,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f)
             )
@@ -314,6 +320,7 @@ private fun Day(
             text = dayStr,
             fontFamily = AlegreyaFontFamily,
             fontSize = 16.sp,
+            color = White,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Normal
         )

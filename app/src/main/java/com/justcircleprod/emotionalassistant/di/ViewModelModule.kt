@@ -1,7 +1,10 @@
 package com.justcircleprod.emotionalassistant.di
 
 import android.content.Context
-import com.justcircleprod.emotionalassistant.ml.Model
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetector
+import com.google.mlkit.vision.face.FaceDetectorOptions
+import com.justcircleprod.emotionalassistant.ml.EmotionRecognitionModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +18,16 @@ object ViewModelModule {
 
     @ViewModelScoped
     @Provides
-    fun provideEmotionRecognitionModel(@ApplicationContext context: Context): Model =
-        Model.newInstance(context)
+    fun provideEmotionRecognitionModel(@ApplicationContext context: Context): EmotionRecognitionModel =
+        EmotionRecognitionModel.newInstance(context)
+
+    @ViewModelScoped
+    @Provides
+    fun provideFaceDetector(): FaceDetector {
+        val options = FaceDetectorOptions.Builder()
+            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+            .build()
+
+        return FaceDetection.getClient(options)
+    }
 }

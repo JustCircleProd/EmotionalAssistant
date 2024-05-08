@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.domain.models.EmotionalStateName
 import com.justcircleprod.emotionalassistant.core.presentation.compontents.buttons.BackButton
 import com.justcircleprod.emotionalassistant.core.presentation.theme.AlegreyaFontFamily
@@ -35,7 +36,6 @@ import com.justcircleprod.emotionalassistant.core.presentation.theme.SubtitleTex
 import com.justcircleprod.emotionalassistant.core.presentation.theme.White
 import com.justcircleprod.emotionalassistant.core.presentation.util.getEmotionalStateNameString
 import com.justcircleprod.emotionalassistant.recommendations.presentation.components.RecommendationItem
-import com.justcircleprod.emotionalassistant.R
 
 @Composable
 fun EmotionalStateRecommendationScreen(
@@ -191,10 +191,12 @@ private fun Preview() {
 
                 val context = LocalContext.current
 
-                val recommendationTitles = stringArrayResource(id = R.array.depression_recommendation_titles)
+                val recommendationTitles =
+                    stringArrayResource(id = R.array.depression_recommendation_titles)
 
 
-                val recommendationTexts = stringArrayResource(id = R.array.depression_recommendation_texts)
+                val recommendationTexts =
+                    stringArrayResource(id = R.array.depression_recommendation_texts)
 
 
                 LazyColumn(

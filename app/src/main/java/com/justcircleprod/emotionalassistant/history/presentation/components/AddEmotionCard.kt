@@ -24,10 +24,10 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.justcircleprod.emotionalassistant.core.presentation.theme.AlegreyaFontFamily
-import com.justcircleprod.emotionalassistant.core.presentation.theme.BottomSheetCardContainerColor
-import com.justcircleprod.emotionalassistant.core.presentation.theme.White
 import com.justcircleprod.emotionalassistant.R
+import com.justcircleprod.emotionalassistant.core.presentation.theme.AlegreyaFontFamily
+import com.justcircleprod.emotionalassistant.core.presentation.theme.TonalButtonColor
+import com.justcircleprod.emotionalassistant.core.presentation.theme.White
 
 @Composable
 fun AddEmotionCard(
@@ -35,9 +35,7 @@ fun AddEmotionCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        colors = CardDefaults.cardColors().copy(
-            containerColor = BottomSheetCardContainerColor
-        ),
+        colors = CardDefaults.cardColors(containerColor = TonalButtonColor),
         modifier = modifier
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.calendar_day_card_rounded_corner_size)))
             .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))

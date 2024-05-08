@@ -7,7 +7,7 @@ import org.mongodb.kbson.ObjectId
 import java.time.LocalDateTime
 
 interface EmotionRepository {
-    suspend fun insert(emotion: Emotion)
+    suspend fun add(emotion: Emotion)
 
     fun getAll(): Flow<List<Emotion>>
 

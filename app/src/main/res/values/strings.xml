@@ -202,7 +202,7 @@
     <string name="neurosis">Тревожный невроз</string>
     <string name="social_phobia">Социофобия</string>
     <string name="asthenia">Синдром усталости</string>
-    <string name="insomnia">Бессоница</string>
+    <string name="insomnia">Бессонница</string>
 
 
     <string-array name="depression_questions">

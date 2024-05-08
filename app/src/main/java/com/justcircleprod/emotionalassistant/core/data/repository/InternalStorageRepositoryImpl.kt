@@ -2,10 +2,7 @@ package com.justcircleprod.emotionalassistant.core.data.repository
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import com.justcircleprod.emotionalassistant.core.domain.repository.InternalStorageRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -29,14 +26,14 @@ class InternalStorageRepositoryImpl @Inject constructor(private val context: Con
         }
     }
 
-    override suspend fun loadImage(imageFileName: String): Bitmap? {
-        return withContext(Dispatchers.IO) {
-            val files = context.filesDir.listFiles()
-            val bytes =
-                files?.first { it.canRead() && it.isFile && it.name == imageFileName }?.readBytes()
-            bytes?.size?.let {
-                BitmapFactory.decodeByteArray(bytes, 0, it)
-            }
+    override fun deleteImage(
+        context: Context,
+        filename: String
+    ): Boolean {
+        return try {
+            context.deleteFile(filename)
+        } catch (e: Exception) {
+            false
         }
     }
 }

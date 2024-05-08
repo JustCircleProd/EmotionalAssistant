@@ -10,8 +10,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +23,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBackIosNew
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -34,6 +42,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +60,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.domain.models.EmotionName
 import com.justcircleprod.emotionalassistant.core.presentation.compontents.NavigationItem
 import com.justcircleprod.emotionalassistant.core.presentation.compontents.buttons.BackButton
@@ -63,7 +73,6 @@ import com.justcircleprod.emotionalassistant.core.presentation.util.getEmotionNa
 import com.justcircleprod.emotionalassistant.emotionRecognition.presentation.viewModel.EmotionRecognitionEvent
 import com.justcircleprod.emotionalassistant.emotionRecognition.presentation.viewModel.EmotionRecognitionStage
 import com.justcircleprod.emotionalassistant.emotionRecognition.presentation.viewModel.EmotionRecognitionViewModel
-import com.justcircleprod.emotionalassistant.R
 import kotlinx.coroutines.launch
 
 
@@ -89,6 +98,8 @@ fun EmotionRecognitionByPhotoScreen(
     }
 
     Surface {
+        val context = LocalContext.current
+
         val recognizedEmotion = viewModel.recognizedEmotion.collectAsStateWithLifecycle()
         val imageBitmap = viewModel.imageBitmap.collectAsStateWithLifecycle()
 
@@ -154,11 +165,23 @@ fun EmotionRecognitionByPhotoScreen(
                             )
                         },
                         onConfirmButtonClicked = {
-                            viewModel.onEvent(EmotionRecognitionEvent.OnEmotionResultConfirmed)
-
                             if (viewModel.emotionIdToUpdate != null) {
-                                navController.popBackStack(returnRoute, false)
+                                viewModel.onEvent(
+                                    EmotionRecognitionEvent.OnEmotionResultConfirmedToUpdate(
+                                        context
+                                    )
+                                )
+
+                                scope.launch {
+                                    viewModel.savedEmotionId.collect {
+                                        if (it != null) {
+                                            navController.popBackStack(returnRoute, false)
+                                        }
+                                    }
+                                }
                             } else {
+                                viewModel.onEvent(EmotionRecognitionEvent.OnEmotionResultConfirmedToAdd)
+
                                 scope.launch {
                                     viewModel.savedEmotionId.collect {
                                         if (it != null) {
@@ -548,6 +571,298 @@ private fun PreviewError() {
 
                     Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
                 }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewFaceDetectionPrototype() {
+    Surface {
+        val recognitionStage =
+            remember { mutableStateOf(EmotionRecognitionStage.FACE_DETECTION) }
+
+        Column {
+            IconButton(
+                onClick = { },
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.toolbar_padding))
+                    .size(dimensionResource(id = R.dimen.icon_button_size))
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.ArrowBackIosNew,
+                    contentDescription = null,
+                    tint = Color.Black,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_icon_size))
+                )
+            }
+
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                    .animateContentSize()
+            ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
+                Text(
+                    text = "Стадия распознавания эмоции",
+                    textAlign = TextAlign.Center,
+                    fontFamily = AlegreyaFontFamily,
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (
+                        recognitionStage.value == EmotionRecognitionStage.FACE_NOT_DETECTED ||
+                        recognitionStage.value == EmotionRecognitionStage.ERROR
+                    ) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        Color.Black
+                    }
+                )
+
+                Spacer(Modifier.height(30.dp))
+
+                Image(
+                    painter = painterResource(id = R.drawable.prototype_image_placeholder),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(
+                            dimensionResource(id = R.dimen.emotion_image_width),
+                            dimensionResource(id = R.dimen.emotion_image_height)
+                        )
+                        .clip(RoundedCornerShape(dimensionResource(id = R.dimen.emotion_image_rounded_corner_size)))
+                )
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewEmotionClassifiedPrototype() {
+    Surface {
+        val recognitionStage =
+            remember { mutableStateOf(EmotionRecognitionStage.EMOTION_CLASSIFIED) }
+
+        Column {
+            IconButton(
+                onClick = { },
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.toolbar_padding))
+                    .size(dimensionResource(id = R.dimen.icon_button_size))
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.ArrowBackIosNew,
+                    contentDescription = null,
+                    tint = Color.Black,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_icon_size))
+                )
+            }
+
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                    .animateContentSize()
+            ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
+                Text(
+                    text = "Распознанная эмоция",
+                    textAlign = TextAlign.Center,
+                    fontFamily = AlegreyaFontFamily,
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (
+                        recognitionStage.value == EmotionRecognitionStage.FACE_NOT_DETECTED ||
+                        recognitionStage.value == EmotionRecognitionStage.ERROR
+                    ) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        Color.Black
+                    }
+                )
+
+                Spacer(Modifier.height(30.dp))
+
+                Image(
+                    painter = painterResource(id = R.drawable.prototype_image_placeholder),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(
+                            dimensionResource(id = R.dimen.emotion_image_width),
+                            dimensionResource(id = R.dimen.emotion_image_height)
+                        )
+                        .clip(RoundedCornerShape(dimensionResource(id = R.dimen.emotion_image_rounded_corner_size)))
+                )
+
+                Spacer(Modifier.height(50.dp))
+
+                Column(Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = { },
+                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corner_size)),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                1.dp,
+                                Color.Black,
+                                shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corner_size))
+                            )
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(
+                                vertical = dimensionResource(id = R.dimen.button_content_vertical_text_padding),
+                                horizontal = dimensionResource(id = R.dimen.button_content_horizontal_text_padding)
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.select_from_the_list),
+                                fontFamily = AlegreyaFontFamily,
+                                fontSize = 19.sp,
+                                color = Color.Black
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Button(
+                        onClick = { },
+                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corner_size)),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                1.dp,
+                                Color.Black,
+                                shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corner_size))
+                            )
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(
+                                vertical = dimensionResource(id = R.dimen.button_content_vertical_text_padding),
+                                horizontal = dimensionResource(id = R.dimen.button_content_horizontal_text_padding)
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.confirm),
+                                fontFamily = AlegreyaFontFamily,
+                                fontSize = 19.sp,
+                                color = Color.Black
+                            )
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewErrorPrototype() {
+    Surface {
+        Column {
+            IconButton(
+                onClick = { },
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.toolbar_padding))
+                    .size(dimensionResource(id = R.dimen.icon_button_size))
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.ArrowBackIosNew,
+                    contentDescription = null,
+                    tint = Color.Black,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_icon_size))
+                )
+            }
+
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                    .animateContentSize()
+            ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
+                Text(
+                    text = "Ошибка",
+                    textAlign = TextAlign.Center,
+                    fontFamily = AlegreyaFontFamily,
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+
+                Spacer(Modifier.height(30.dp))
+
+                Image(
+                    painter = painterResource(id = R.drawable.prototype_image_placeholder),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(
+                            dimensionResource(id = R.dimen.emotion_image_width),
+                            dimensionResource(id = R.dimen.emotion_image_height)
+                        )
+                        .clip(RoundedCornerShape(dimensionResource(id = R.dimen.emotion_image_rounded_corner_size)))
+                )
+
+                Spacer(Modifier.height(50.dp))
+
+                Button(
+                    onClick = { },
+                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corner_size)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            1.dp,
+                            Color.Black,
+                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.button_rounded_corner_size))
+                        )
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(
+                            vertical = dimensionResource(id = R.dimen.button_content_vertical_text_padding),
+                            horizontal = dimensionResource(id = R.dimen.button_content_horizontal_text_padding)
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.to_choose_a_method),
+                            fontFamily = AlegreyaFontFamily,
+                            fontSize = 19.sp,
+                            color = Color.Black
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
             }
         }
     }

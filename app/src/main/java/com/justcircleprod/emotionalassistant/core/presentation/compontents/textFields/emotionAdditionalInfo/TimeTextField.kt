@@ -16,13 +16,13 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.presentation.compontents.dialogs.MyTimePickerDialog
 import com.justcircleprod.emotionalassistant.core.presentation.theme.AlegreyaFontFamily
 import com.justcircleprod.emotionalassistant.core.presentation.theme.DisabledTextFieldColor
 import com.justcircleprod.emotionalassistant.core.presentation.theme.UnfocusedTextFieldColor
 import com.justcircleprod.emotionalassistant.core.presentation.theme.White
 import com.justcircleprod.emotionalassistant.core.presentation.util.formatLocalTime
-import com.justcircleprod.emotionalassistant.R
 import java.time.LocalTime
 
 @Composable

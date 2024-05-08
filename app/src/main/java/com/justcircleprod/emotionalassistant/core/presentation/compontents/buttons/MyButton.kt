@@ -20,10 +20,10 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.presentation.theme.AlegreyaFontFamily
 import com.justcircleprod.emotionalassistant.core.presentation.theme.ButtonColor
 import com.justcircleprod.emotionalassistant.core.presentation.theme.White
-import com.justcircleprod.emotionalassistant.R
 
 @Composable
 fun MyButton(

@@ -3,9 +3,9 @@ package com.justcircleprod.emotionalassistant.recommendations.presentation.emoti
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.GsonBuilder
 import com.justcircleprod.emotionalassistant.core.domain.repository.EmotionRepository
 import com.justcircleprod.emotionalassistant.core.presentation.compontents.NavigationItem
-import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

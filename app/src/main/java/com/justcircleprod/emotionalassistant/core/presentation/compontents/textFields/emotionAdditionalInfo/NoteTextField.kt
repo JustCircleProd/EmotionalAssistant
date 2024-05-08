@@ -6,8 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import com.justcircleprod.emotionalassistant.core.presentation.compontents.textFields.MyTextField
 import com.justcircleprod.emotionalassistant.R
+import com.justcircleprod.emotionalassistant.core.presentation.compontents.textFields.MyTextField
 
 @Composable
 fun NoteTextField(

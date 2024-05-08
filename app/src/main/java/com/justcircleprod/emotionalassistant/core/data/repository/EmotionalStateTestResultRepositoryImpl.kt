@@ -17,7 +17,7 @@ import javax.inject.Inject
 class EmotionalStateTestResultRepositoryImpl @Inject constructor(private val realm: Realm) :
     EmotionalStateTestResultRepository {
 
-    override suspend fun insert(testResult: EmotionalStateTestResult) {
+    override suspend fun add(testResult: EmotionalStateTestResult) {
         withContext(Dispatchers.IO) {
             realm.write {
                 val copiedTestResult = EmotionalStateTestResult().apply {

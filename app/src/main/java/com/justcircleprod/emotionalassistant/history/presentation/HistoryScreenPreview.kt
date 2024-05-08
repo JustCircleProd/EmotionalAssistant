@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
@@ -63,6 +64,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.domain.models.EmotionalStateName
 import com.justcircleprod.emotionalassistant.core.presentation.compontents.buttons.MyIconButton
 import com.justcircleprod.emotionalassistant.core.presentation.theme.AlegreyaFontFamily
@@ -75,8 +77,7 @@ import com.justcircleprod.emotionalassistant.core.presentation.theme.SubtitleTex
 import com.justcircleprod.emotionalassistant.core.presentation.theme.White
 import com.justcircleprod.emotionalassistant.core.presentation.util.getMonthName
 import com.justcircleprod.emotionalassistant.history.presentation.components.AddEmotionCard
-import com.justcircleprod.emotionalassistant.history.presentation.components.EmotionalStateResultCard
-import com.justcircleprod.emotionalassistant.R
+import com.justcircleprod.emotionalassistant.history.presentation.components.EmotionalStateCard
 import com.kizitonwose.calendar.compose.CalendarLayoutInfo
 import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -99,7 +100,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun HistoryScreenPreview(isBottomSheetExpanded: Boolean = false) {
+fun HistoryScreenPreview(isBottomSheetExpanded: Boolean = true) {
     BdTheme {
         Surface {
             val scaffoldState = if (isBottomSheetExpanded) {
@@ -151,7 +152,7 @@ fun HistoryScreenPreview(isBottomSheetExpanded: Boolean = false) {
                             }
 
                             item {
-                                EmotionalStateResultCard(
+                                EmotionalStateCard(
                                     EmotionalStateName.DEPRESSION,
                                     onRecommendationButtonClick = {
 
@@ -164,7 +165,7 @@ fun HistoryScreenPreview(isBottomSheetExpanded: Boolean = false) {
                             }
 
                             item {
-                                EmotionalStateResultCard(
+                                EmotionalStateCard(
                                     EmotionalStateName.ASTHENIA,
                                     onRecommendationButtonClick = {
 
@@ -452,6 +453,7 @@ private fun CalendarTitle(
             text = "$monthStr $yearStr",
             fontFamily = AlegreyaFontFamily,
             fontSize = 21.sp,
+            color = White,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f)
@@ -467,11 +469,16 @@ private fun CalendarTitle(
 private fun BackMonthButton(onClick: () -> Unit) {
     IconButton(
         onClick = onClick,
-        modifier = Modifier.clip(shape = CircleShape)
+        modifier = Modifier
+            .clip(shape = CircleShape)
+            .size(dimensionResource(id = R.dimen.icon_button_size))
     ) {
         Icon(
             imageVector = Icons.Rounded.ArrowBackIosNew,
-            contentDescription = null
+            contentDescription = null,
+            tint = White,
+            modifier = Modifier
+                .size(dimensionResource(id = R.dimen.icon_button_icon_size))
         )
     }
 }
@@ -487,6 +494,7 @@ private fun ForwardMonthButton(onClick: () -> Unit) {
         Icon(
             imageVector = Icons.Rounded.ArrowBackIosNew,
             contentDescription = null,
+            tint = White,
             modifier = Modifier
                 .rotate(180f)
                 .size(dimensionResource(id = R.dimen.icon_button_icon_size))
@@ -504,6 +512,7 @@ private fun MonthHeader(daysOfWeek: List<DayOfWeek>) {
                 textAlign = TextAlign.Center,
                 fontFamily = AlegreyaFontFamily,
                 fontSize = 16.sp,
+                color = White,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f)
             )
@@ -591,8 +600,616 @@ private fun Day(
             text = dayStr,
             fontFamily = AlegreyaFontFamily,
             fontSize = 16.sp,
+            color = White,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Normal
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun HistoryScreenPreviewPrototype() {
+    val isBottomSheetExpanded = true
+
+    Surface {
+        val scaffoldState = if (isBottomSheetExpanded) {
+            rememberBottomSheetScaffoldState(
+                rememberStandardBottomSheetState(initialValue = SheetValue.Expanded)
+            )
+        } else {
+            rememberBottomSheetScaffoldState()
+        }
+
+        BottomSheetScaffold(
+            scaffoldState = scaffoldState,
+            sheetContainerColor = Color.White,
+            sheetContent = {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(id = R.dimen.bottom_sheet_horizontal_padding))
+                        .padding(bottom = dimensionResource(id = R.dimen.bottom_sheet_bottom_padding))
+                ) {
+                    Text(
+                        text = "27.02.2024",
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = AlegreyaFontFamily,
+                        fontSize = 24.sp,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(Modifier.height(16.dp))
+
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Text(
+                                text = stringResource(R.string.emotional_states),
+                                fontWeight = FontWeight.Medium,
+                                fontFamily = AlegreyaFontFamily,
+                                fontSize = 19.sp,
+                                color = Color.Black,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(Modifier.height(8.dp))
+                        }
+
+                        item {
+                            EmotionalStateCardPrototype(
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+
+                        item {
+                            EmotionalStateCardPrototype(
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Spacer(Modifier.height(30.dp))
+
+                            Text(
+                                text = stringResource(id = R.string.emotions),
+                                fontWeight = FontWeight.Medium,
+                                fontFamily = AlegreyaFontFamily,
+                                fontSize = 19.sp,
+                                color = Color.Black,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(Modifier.height(8.dp))
+                        }
+
+                        item {
+                            AddEmotionCardPrototype(
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+
+                        item {
+                            EmotionCardPrototype(
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+                    }
+                }
+            },
+            sheetPeekHeight = 0.dp,
+            sheetDragHandle = { BottomSheetDefaults.DragHandle(color = Color.Black) }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(innerPadding)
+                    .padding(horizontal = dimensionResource(id = R.dimen.main_screens_space))
+                    .animateContentSize()
+            ) {
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+
+                Text(
+                    text = stringResource(R.string.history_of_your_states),
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = AlegreyaFontFamily,
+                    fontSize = 26.sp,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(20.dp))
+
+                MyCalendarPrototype()
+
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.main_screens_space)))
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmotionCardPrototype(
+    modifier: Modifier = Modifier
+) {
+    Card(
+        colors = CardDefaults.cardColors().copy(
+            containerColor = Color.White
+        ),
+        modifier = modifier
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.calendar_day_card_rounded_corner_size)))
+            .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
+            .border(
+                1.dp,
+                Color.Black,
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.calendar_day_card_rounded_corner_size))
+            )
+    ) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.prototype_image_placeholder),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
+                    .fillMaxWidth()
+            )
+
+            val backgroundAlpha = 0.3f
+
+            Box(
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
+                    .fillMaxWidth()
+                    .background(Color.Black.copy(backgroundAlpha))
+            )
+
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.calendar_day_card_padding))
+            ) {
+                Column {
+                    Text(
+                        text = "Lorem",
+                        fontFamily = AlegreyaFontFamily,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
+                    )
+
+                    Text(
+                        text = "12:00",
+                        fontFamily = AlegreyaFontFamily,
+                        fontSize = 15.sp,
+                        color = Color.Black
+                    )
+                }
+
+                EmotionActionButtonsPrototype(
+
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmotionActionButtonsPrototype(
+
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row {
+            IconButton(
+                onClick = { },
+                modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_size))
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Edit,
+                    contentDescription = null,
+                    tint = Color.Black,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_icon_size))
+                )
+            }
+
+            IconButton(
+                onClick = { },
+                modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_size))
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = null,
+                    tint = Color.Black,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_icon_size))
+                )
+            }
+        }
+
+        IconButton(
+            onClick = { },
+            modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_size))
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.ArrowBackIosNew,
+                contentDescription = null,
+                tint = Color.Black,
+                modifier = Modifier
+                    .size(dimensionResource(id = R.dimen.icon_button_icon_size))
+                    .rotate(180f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun MyCalendarPrototype(
+    modifier: Modifier = Modifier
+) {
+    val currentMonth = remember { YearMonth.of(2024, 2) }
+    val startMonth = remember { currentMonth.minusMonths(500) }
+    val endMonth = remember { currentMonth.plusMonths(500) }
+    val daysOfWeek = remember { daysOfWeek() }
+
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        val state = rememberCalendarState(
+            startMonth = startMonth,
+            endMonth = endMonth,
+            firstVisibleMonth = currentMonth,
+            firstDayOfWeek = daysOfWeek.first(),
+        )
+
+        val coroutineScope = rememberCoroutineScope()
+        val visibleMonth = rememberFirstMostVisibleMonth(state)
+
+        CalendarTitlePrototype(
+            currentMonth = visibleMonth.yearMonth,
+            goToPrevious = {
+                coroutineScope.launch {
+                    state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.previousMonth)
+                }
+            },
+            goToNext = {
+                coroutineScope.launch {
+                    state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.nextMonth)
+                }
+            }
+        )
+
+        Spacer(Modifier.height(6.dp))
+
+        HorizontalCalendar(
+            state = state,
+            dayContent = { day ->
+                DayPrototype(
+                    day = day,
+                    isSelected = false,
+                    onClick = {
+
+                    }
+                )
+            },
+            monthHeader = {
+                MonthHeaderPrototype(daysOfWeek = daysOfWeek)
+            }
+        )
+    }
+}
+
+@Composable
+private fun CalendarTitlePrototype(
+    currentMonth: YearMonth,
+    goToPrevious: () -> Unit,
+    goToNext: () -> Unit,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BackMonthButtonPrototype(
+            onClick = goToPrevious,
+        )
+
+        val monthStr = getMonthName(LocalContext.current, currentMonth.monthValue)
+        val yearStr = currentMonth.year.toString()
+
+        Text(
+            text = "$monthStr $yearStr",
+            fontFamily = AlegreyaFontFamily,
+            fontSize = 21.sp,
+            color = Color.Black,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
+
+        ForwardMonthButtonPrototype(
+            onClick = goToNext,
+        )
+    }
+}
+
+@Composable
+private fun BackMonthButtonPrototype(onClick: () -> Unit) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .clip(shape = CircleShape)
+            .size(dimensionResource(id = R.dimen.icon_button_size))
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.ArrowBackIosNew,
+            tint = Color.Black,
+            contentDescription = null,
+            modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_icon_size))
+        )
+    }
+}
+
+@Composable
+private fun ForwardMonthButtonPrototype(onClick: () -> Unit) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .clip(shape = CircleShape)
+            .size(dimensionResource(id = R.dimen.icon_button_size))
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.ArrowBackIosNew,
+            contentDescription = null,
+            tint = Color.Black,
+            modifier = Modifier
+                .rotate(180f)
+                .size(dimensionResource(id = R.dimen.icon_button_icon_size))
+        )
+    }
+}
+
+@Composable
+private fun MonthHeaderPrototype(daysOfWeek: List<DayOfWeek>) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        for (dayOfWeek in daysOfWeek) {
+            Text(
+                text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+                textAlign = TextAlign.Center,
+                fontFamily = AlegreyaFontFamily,
+                fontSize = 16.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun DayPrototype(
+    day: CalendarDay,
+    isSelected: Boolean,
+    onClick: (CalendarDay) -> Unit
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .aspectRatio(1f)
+            .padding(dimensionResource(id = R.dimen.calendar_day_cell_padding))
+            .clip(CircleShape)
+            .clickable { onClick(day) }
+            .run {
+                if (day.date == LocalDate.of(2024, 2, 27) && !isSelected) {
+                    border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape
+                    )
+                } else {
+                    this
+                }
+            }
+    ) {
+        if (day.position != DayPosition.MonthDate) return@Box
+
+        if (
+            day.date == LocalDate.of(2024, 2, 7) ||
+            day.date == LocalDate.of(2024, 2, 10) ||
+            day.date == LocalDate.of(2024, 2, 15) ||
+            day.date == LocalDate.of(2024, 2, 18) ||
+            day.date == LocalDate.of(2024, 2, 25) ||
+            day.date == LocalDate.of(2024, 2, 27)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.prototype_image_placeholder),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
+                    .fillMaxWidth()
+            )
+        }
+
+        val backgroundAlpha = 0.3f
+
+        Box(
+            modifier = Modifier
+                .clip(CircleShape)
+                .fillMaxSize()
+                .background(
+                    when {
+                        isSelected -> {
+                            Color.Black.copy(alpha = backgroundAlpha)
+                        }
+
+                        !isSelected && (day.date == LocalDate.of(2024, 2, 7) ||
+                                day.date == LocalDate.of(2024, 2, 10) ||
+                                day.date == LocalDate.of(2024, 2, 15) ||
+                                day.date == LocalDate.of(2024, 2, 18) ||
+                                day.date == LocalDate.of(2024, 2, 25) ||
+                                day.date == LocalDate.of(2024, 2, 27)) -> {
+                            Color.Black.copy(alpha = backgroundAlpha)
+                        }
+
+                        else -> {
+                            Color.Transparent
+                        }
+                    }
+                )
+        )
+
+        val dayOfMonth = day.date.dayOfMonth
+        val dayStr = if (dayOfMonth.toString().length == 1) "0$dayOfMonth" else "$dayOfMonth"
+
+        Text(
+            text = dayStr,
+            fontFamily = AlegreyaFontFamily,
+            fontSize = 16.sp,
+            color = if (day.date == LocalDate.of(2024, 2, 7) ||
+                day.date == LocalDate.of(2024, 2, 10) ||
+                day.date == LocalDate.of(2024, 2, 15) ||
+                day.date == LocalDate.of(2024, 2, 18) ||
+                day.date == LocalDate.of(2024, 2, 25) ||
+                day.date == LocalDate.of(2024, 2, 27)
+            ) {
+                White
+            } else Color.Black,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Normal
+        )
+    }
+}
+
+@Composable
+fun EmotionalStateCardPrototype(
+    modifier: Modifier = Modifier
+) {
+    Card(
+        colors = CardDefaults.cardColors().copy(
+            containerColor = Color.White
+        ),
+        onClick = { },
+        modifier = modifier
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.calendar_day_card_rounded_corner_size)))
+            .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
+            .border(
+                1.dp,
+                Color.Black,
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.calendar_day_card_rounded_corner_size))
+            )
+    ) {
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxSize()
+                .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
+                .padding(dimensionResource(id = R.dimen.calendar_day_card_padding))
+        ) {
+            Text(
+                text = "Lorem ipsum",
+                fontFamily = AlegreyaFontFamily,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconButton(
+                    onClick = { },
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_size))
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = null,
+                        tint = Color.Black,
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_icon_size))
+                    )
+                }
+
+                IconButton(
+                    onClick = { },
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_size))
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowBackIosNew,
+                        contentDescription = null,
+                        tint = Color.Black,
+                        modifier = Modifier
+                            .size(dimensionResource(id = R.dimen.icon_button_icon_size))
+                            .rotate(180f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AddEmotionCardPrototype(
+    modifier: Modifier = Modifier
+) {
+    Card(
+        colors = CardDefaults.cardColors().copy(
+            containerColor = Color.White
+        ),
+        modifier = modifier
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.calendar_day_card_rounded_corner_size)))
+            .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
+            .border(
+                1.dp,
+                Color.Black,
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.calendar_day_card_rounded_corner_size))
+            )
+            .clickable { }
+    ) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(dimensionResource(id = R.dimen.calendar_day_emotion_card_height))
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.calendar_day_card_padding))
+            ) {
+                Text(
+                    text = stringResource(R.string.add_emotion),
+                    fontFamily = AlegreyaFontFamily,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
+                )
+
+                Icon(
+                    imageVector = Icons.Rounded.Add,
+                    contentDescription = null,
+                    tint = Color.Black,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.icon_button_icon_size))
+                )
+            }
+        }
     }
 }

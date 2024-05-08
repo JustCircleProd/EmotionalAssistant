@@ -23,11 +23,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.presentation.theme.ActionCardContainerColor
 import com.justcircleprod.emotionalassistant.core.presentation.theme.AlegreyaFontFamily
 import com.justcircleprod.emotionalassistant.core.presentation.theme.HomeActionCardButtonContainerColor
 import com.justcircleprod.emotionalassistant.core.presentation.theme.White
-import com.justcircleprod.emotionalassistant.R
 
 @Composable
 fun HomeActionCard(
@@ -54,7 +54,7 @@ fun HomeActionCard(
                 )
         ) {
             Column(
-                modifier = Modifier.weight(2.5f)
+                modifier = Modifier.weight(1.5f)
             ) {
                 Text(
                     text = title,
@@ -98,6 +98,5 @@ fun HomeActionCard(
                 modifier = Modifier.weight(1f)
             )
         }
-
     }
 }

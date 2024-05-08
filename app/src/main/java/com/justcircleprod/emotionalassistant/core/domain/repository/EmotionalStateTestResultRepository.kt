@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 interface EmotionalStateTestResultRepository {
 
-    suspend fun insert(testResult: EmotionalStateTestResult)
+    suspend fun add(testResult: EmotionalStateTestResult)
 
     fun getByDate(date: LocalDate): Flow<List<EmotionalStateTestResult>>
 

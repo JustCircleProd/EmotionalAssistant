@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.presentation.compontents.NavigationItem
 import com.justcircleprod.emotionalassistant.core.presentation.theme.AlegreyaFontFamily
 import com.justcircleprod.emotionalassistant.core.presentation.theme.BottomSheetContainerColor
@@ -42,9 +44,8 @@ import com.justcircleprod.emotionalassistant.core.presentation.theme.White
 import com.justcircleprod.emotionalassistant.core.presentation.util.formatLocalDate
 import com.justcircleprod.emotionalassistant.history.presentation.components.AddEmotionCard
 import com.justcircleprod.emotionalassistant.history.presentation.components.EmotionCard
-import com.justcircleprod.emotionalassistant.history.presentation.components.EmotionalStateResultCard
+import com.justcircleprod.emotionalassistant.history.presentation.components.EmotionalStateCard
 import com.justcircleprod.emotionalassistant.history.presentation.components.MyCalendar
-import com.justcircleprod.emotionalassistant.R
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -104,7 +105,7 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                 MyCalendar(
                     selectedDate = selectedDate,
                     onDateSelected = {
-                        viewModel.selectedDate.value = it
+                        viewModel.onEvent(HistoryEvent.OnSelectedDateChanged(it))
                     },
                     emotions = emotions
                 )
@@ -121,6 +122,8 @@ private fun BottomSheetContent(
     navController: NavController,
     viewModel: HistoryViewModel
 ) {
+    val context = LocalContext.current
+
     val emotionsForSelectedDate by viewModel.emotionsForSelectedDate.collectAsStateWithLifecycle()
 
     val emotionalStateResultsForSelectedDate by viewModel.emotionalStateTestResultsForSelectedDate.collectAsStateWithLifecycle(
@@ -181,7 +184,7 @@ private fun BottomSheetContent(
                         val emotionalStateName =
                             testResult.emotionalStateTest?.emotionalStateName ?: return@items
 
-                        EmotionalStateResultCard(
+                        EmotionalStateCard(
                             emotionalStateName,
                             onRecommendationButtonClick = {
                                 navController.navigate(
@@ -191,7 +194,11 @@ private fun BottomSheetContent(
                                 )
                             },
                             onDeleteButtonClick = {
-                                viewModel.deleteEmotionalStateTestResult(testResult)
+                                viewModel.onEvent(
+                                    HistoryEvent.OnDeleteEmotionalStateTestResultClick(
+                                        testResult
+                                    )
+                                )
                             },
                             modifier = Modifier.weight(1f)
                         )
@@ -257,7 +264,7 @@ private fun BottomSheetContent(
                             )
                         },
                         onDeleteButtonClick = {
-                            viewModel.deleteEmotion(emotion)
+                            viewModel.onEvent(HistoryEvent.OnDeleteEmotionClick(context, emotion))
                         }
                     )
                 }

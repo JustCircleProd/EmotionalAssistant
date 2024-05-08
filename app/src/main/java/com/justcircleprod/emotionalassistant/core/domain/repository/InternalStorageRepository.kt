@@ -1,5 +1,6 @@
 package com.justcircleprod.emotionalassistant.core.domain.repository
 
+import android.content.Context
 import android.graphics.Bitmap
 
 interface InternalStorageRepository {
@@ -7,5 +8,5 @@ interface InternalStorageRepository {
 
     fun saveImage(imageFileName: String, bitmap: Bitmap): Boolean
 
-    suspend fun loadImage(imageFileName: String): Bitmap?
+    fun deleteImage(context: Context, filename: String): Boolean
 }

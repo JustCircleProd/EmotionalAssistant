@@ -21,12 +21,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.presentation.theme.PeriodSelectorBorderColor
 import com.justcircleprod.emotionalassistant.core.presentation.theme.PeriodSelectorUnselectedContentColor
 import com.justcircleprod.emotionalassistant.core.presentation.theme.TimePickerDialColor
 import com.justcircleprod.emotionalassistant.core.presentation.theme.TimeSelectorUnselectedContainerColor
 import com.justcircleprod.emotionalassistant.core.presentation.theme.White
-import com.justcircleprod.emotionalassistant.R
 import java.time.LocalTime
 
 @OptIn(ExperimentalMaterial3Api::class)

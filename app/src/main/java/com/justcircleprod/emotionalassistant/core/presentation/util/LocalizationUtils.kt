@@ -1,9 +1,9 @@
 package com.justcircleprod.emotionalassistant.core.presentation.util
 
 import android.content.Context
+import com.justcircleprod.emotionalassistant.R
 import com.justcircleprod.emotionalassistant.core.domain.models.EmotionName
 import com.justcircleprod.emotionalassistant.core.domain.models.EmotionalStateName
-import com.justcircleprod.emotionalassistant.R
 
 fun getEmotionNameString(context: Context, emotionName: EmotionName?): String {
     return when (emotionName) {

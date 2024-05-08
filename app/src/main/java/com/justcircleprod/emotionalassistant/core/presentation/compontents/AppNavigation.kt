@@ -1,7 +1,7 @@
 package com.justcircleprod.emotionalassistant.core.presentation.compontents
 
-import com.justcircleprod.emotionalassistant.core.domain.models.EmotionalStateName
 import com.google.gson.GsonBuilder
+import com.justcircleprod.emotionalassistant.core.domain.models.EmotionalStateName
 import org.mongodb.kbson.ObjectId
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 enum class Screen {
     WELCOME,
-    REGISTER,
+    REGISTRATION,
     HOME,
     HISTORY,
     EMOTION_RECOGNITION_METHOD_SELECTION,
@@ -26,7 +26,7 @@ enum class Screen {
 sealed class NavigationItem(val route: String) {
     data object Welcome : NavigationItem(Screen.WELCOME.name)
 
-    data object Register : NavigationItem(Screen.REGISTER.name)
+    data object Registration : NavigationItem(Screen.REGISTRATION.name)
 
     data object Home : NavigationItem(Screen.HOME.name)
 

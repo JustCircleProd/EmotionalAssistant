@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(private val realm: Realm) :
     UserRepository {
-    override suspend fun insert(user: User) {
+    override suspend fun add(user: User) {
         withContext(Dispatchers.IO) {
             realm.write {
                 copyToRealm(user, updatePolicy = UpdatePolicy.ALL)
