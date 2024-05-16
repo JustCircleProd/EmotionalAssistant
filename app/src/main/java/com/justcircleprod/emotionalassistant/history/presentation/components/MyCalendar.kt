@@ -258,8 +258,11 @@ private fun Day(
             .aspectRatio(1f)
             .padding(dimensionResource(id = R.dimen.calendar_day_cell_padding))
             .clip(CircleShape)
-            .clickable { onClick(day) }
             .run {
+                if (day.position == DayPosition.MonthDate) {
+                    clickable { onClick(day) }
+                }
+
                 if (day.date == LocalDate.now() && !isSelected) {
                     border(
                         width = 1.dp,
