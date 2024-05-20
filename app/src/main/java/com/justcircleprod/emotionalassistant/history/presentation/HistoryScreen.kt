@@ -1,5 +1,6 @@
 package com.justcircleprod.emotionalassistant.history.presentation
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,12 +17,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -53,13 +56,14 @@ import java.time.LocalDate
 @Composable
 fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hiltViewModel()) {
     Surface {
+        val scope = rememberCoroutineScope()
         val scaffoldState = rememberBottomSheetScaffoldState()
 
         val emotions by viewModel.emotions.collectAsStateWithLifecycle(initialValue = emptyList())
-
         val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
 
         LaunchedEffect(selectedDate) {
+            Log.d("Tag111", selectedDate.toString())
             if (selectedDate == null) return@LaunchedEffect
 
             launch {
@@ -105,7 +109,13 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                 MyCalendar(
                     selectedDate = selectedDate,
                     onDateSelected = {
-                        viewModel.onEvent(HistoryEvent.OnSelectedDateChanged(it))
+                        if (selectedDate == it && scaffoldState.bottomSheetState.currentValue != SheetValue.Expanded) {
+                            scope.launch {
+                                scaffoldState.bottomSheetState.expand()
+                            }
+                        } else {
+                            viewModel.onEvent(HistoryEvent.OnSelectedDateChanged(it))
+                        }
                     },
                     emotions = emotions
                 )

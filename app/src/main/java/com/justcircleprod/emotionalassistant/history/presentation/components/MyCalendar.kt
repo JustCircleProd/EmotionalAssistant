@@ -261,8 +261,11 @@ private fun Day(
             .run {
                 if (day.position == DayPosition.MonthDate) {
                     clickable { onClick(day) }
+                } else {
+                    this
                 }
-
+            }
+            .run {
                 if (day.date == LocalDate.now() && !isSelected) {
                     border(
                         width = 1.dp,
